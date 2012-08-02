@@ -24,7 +24,7 @@ panderOptions('graph.background', 'transparent')
 #### swimming 20120802 - afternoon
 urls <- c('http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=490',
           'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=170',
-          'http://www.databaseolympics.com/sport/sporteventlist.htm?sp=SWI',
+          'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=220',
           'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=420')
 
 #' Pretty time printing
