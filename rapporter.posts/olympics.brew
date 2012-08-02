@@ -1,0 +1,230 @@
+% EasyStats LTD
+% Predictions for today
+% 2012
+
+<%=
+## loading required packages
+suppressPackageStartupMessages(library(XML))
+suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
+
+## set options
+evalsOptions('graph.unify', TRUE)
+panderOptions('table.split.table', Inf)
+panderOptions('graph.symbol', 19)
+panderOptions('graph.legend.position', 'top')
+windowsFonts("Trebuchet MS" = windowsFont("Trebuchet MS"))
+panderOptions('graph.fontfamily', "Trebuchet MS")
+panderOptions('graph.background', 'transparent')
+
+## dataset URLs
+#### kayak/canoo slalom:
+## urls <- c("http://www.databaseolympics.com/sport/sportevent.htm?sp=CAN&enum=330",
+##           "http://www.databaseolympics.com/sport/sportevent.htm?sp=CAN&enum=340",
+##           "http://www.databaseolympics.com/sport/sportevent.htm?sp=SHO&enum=580")
+#### swimming 20120802 - afternoon
+urls <- c('http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=490',
+          'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=170',
+          'http://www.databaseolympics.com/sport/sporteventlist.htm?sp=SWI',
+          'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=420')
+
+#' Pretty time printing
+#' @param sec numeric
+#' @return character in \code{minutes:seconds} format
+#' @author Rapporter Dev Team
+ms <- function(sec) {
+    minute <- sec %/% 60
+    sec <- sprintf("%02d", sec - minute * 60)
+    paste(minute, sec, sep=":")
+}
+
+#' Revert pretty time printing
+#' @param sec character in \code{minutes:seconds} format
+#' @return numeric
+rms <- function(text) {
+    sapply(text, function(x) {
+        x <- as.numeric(strsplit(x, ':')[[1]])
+        if (length(x) == 1)
+            x
+        else
+            x[1] * 60 + x[2]
+        }, USE.NAMES = FALSE)
+}
+
+#' Plot predictions
+#' @param df a data frame with Year, Result columns
+#' @param models predefined models' names to plot
+plotPredictions <- function(df, models) {
+
+    ## custom options
+    panderOptions('graph.fontfamily', "Trebuchet MS")
+
+    ## custom variables - satisfying our DRY needs
+    Y         <- df[, 'Year']
+    Y2012     <- c(Y, 2012)
+    R         <- df[, 'Result']
+    allvalues <- unlist(c(R, mget(paste0(models, '.predict'), envir = parent.frame())))
+    ff        <- panderOptions('graph.fontfamily')
+    fc        <- panderOptions('graph.fontcolor')
+    gc        <- panderOptions('graph.colors')
+    gt        <- panderOptions('graph.grid.lty')
+    gcc       <- panderOptions('graph.grid.color')
+    mn        <- mget(paste0(models, '.name'), envir = parent.frame())
+
+    ## custom par settings
+    par(
+      family   = ff,
+      lwd      = 2,
+      pch      = panderOptions('graph.symbol'),
+      col.axis = fc, col.lab = fc, col.main = fc, col.sub = fc,
+      mar = c(3,4,3,3), family = ff, font = 4)
+
+    ## results
+    plot(Y, R, ylim = c(min(allvalues), max(allvalues)), xlim = c(min(Y), 2012), xaxt = "n", yaxt= "n", xlab = "", ylab = "", cex.lab = 2, cex.main = 2, cex.axis = 2, cex = 2, pch = 16, bg = "transparent", family = ff, font = 4)
+
+    ## title
+    mtext(paste0("Our predictions for the ", df$Event[1]), line = 1, side = 3, family = ff, cex=2.5, font=4, col ='black')
+
+    ## get y axis's ticks
+    ylime <- trunc(c(min(R), max(R)))
+    yperiod <- trunc(diff(ylime)/5)
+    if (diff(ylime) < 5) {
+        ylime   <- round(c(max(R), min(R)), 2)
+        yperiod	<- round(diff(ylime) / 5, 2)
+    }
+    ylime   <- c(ylime[1], ylime[1] + 1:5 * yperiod)
+
+    ## draw x axis
+    axis(1, at = Y2012, Y2012, cex = 2, family = ff, font=4)
+    for (y in Y2012)
+        abline(v = y, lty = gt, col = gcc, lwd = 0.5)
+
+    ## draw y axis
+    par(las = 1, family = ff)
+    axis(2, at = ylime, ms(ylime), cex = 2, family = ff, font=4)
+    for (y in ylime)
+        abline(h = y, lty = gt, col = gcc, lwd = 0.5)
+
+    points(Y, R)
+
+    ## plotting models' lines & text
+    for (m in models) {
+        lines(Y2012, get(paste0(m, '.predict')), col = gc[which(m == models)])
+        lines(Y2012, get(paste0(m, '.predict')), lwd = get(paste0(m, '.width')), col = paste0(gc[which(m == models)], '44'))
+        points(2012, tail(get(paste0(m, '.predict')), 1), pch = 19, col = gc[which(m == models)], cex = 3.5)
+        yy <- 2012 - round((2012-min(Y)) / 20) * (which(m == models) - 1)
+        xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/5 * (2 - which(m == models)))
+        text(yy, xx, ms(trunc(tail(get(paste0(m, '.predict')), 1))), col = gc[which(m == models)], cex = 2)
+    }
+
+    ## add a custom legend
+    mnames <- unlist(mget(paste0(models, '.name'), envir = parent.frame()), use.names = FALSE)
+    legend("topright", mnames, lty = rep(1, times = length(models)), pch = rep(19, times = length(models)), col = rep(gc[1:length(models)], times = 2), adj = c(0, .6), cex = 2, text.col = 'black', text.width = strwidth(paste(mnames, collapse = ' ')))
+}
+%>
+
+
+
+<%for (url in urls) {%>
+
+    <%=
+    ## fetching data from \url{databaseolympics.com}
+    data <- readHTMLTable(readLines(url), which=2, header=TRUE)
+
+    ## just dealing with the winners ATM
+    golddata <- subset(data, Medal %in% "GOLD")
+
+    ## transforming data
+    data$Event         <- as.character(data$Event)
+    golddata$Year      <- as.numeric(as.character(golddata$Year))
+    years              <- c(as.numeric(as.character(sort(unique(golddata$Year)))), 2012)
+    golddata$Result    <- rms(as.character(golddata$Result))
+    rownames(golddata) <- NULL
+%>
+
+## <%=data$Event[1]%>
+
+### Historical data
+
+We have fetched some data from [databaseolympics.com](<%=url%>):
+
+<%=golddata%>
+
+<%
+    ## removing duplicated rows (we just need the Results)
+    if (!all(table(golddata['Year']) == 1))
+        golddata <- golddata[-which(duplicated(golddata['Year'])), ]
+%>
+
+
+### Non-linear model
+
+And fitted a non-linear model on the winning times:
+
+    <%=
+    ## fitting a non-linear model
+    golddata$year2 <- golddata$Year**2
+    golddata$year3 <- golddata$Year**3
+    golddata$year4 <- golddata$Year**4
+    nonLin         <- suppressWarnings(lm(Result ~ Year * year2 * year3 * year4, data = golddata))
+    nonLin.name    <- 'power prediction'
+    nonLin.predict <- suppressWarnings(predict(nonLin, newdata = data.frame(Year = years, year2 = years^2, year3 = years^3, year4 = years^4)))
+    nonLin.width   <- (100 - ((1 - mean(summary(nonLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(nonLin)$adj.r.squared) * 100
+    golddata2012   <- rbind(golddata, c(2012, rep(NA, times = ncol(golddata)-1)))
+    golddata2012$nonLin <- nonLin.predict
+
+    ## printing
+    nonLin
+    %>
+
+Where the adjusted R-squared equals to <%=summary(nonLin)$adj.r.squared%> with a p-value of <%=round(anova(nonLin)$'Pr(>F)'[1], 5)%>.
+
+### Log-linear model
+
+Our log-linear model looks like:
+
+    <%=
+    ## fitting a log-linear model
+    logLin          <- lm(log(Result) ~ Year, data = golddata)
+    logLin.name     <- 'simple prediction'
+    logLin.predict  <- exp(predict(logLin, newdata = data.frame(Year = years)))
+    logLin.width    <- (100 - ((1 - mean(summary(logLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(logLin)$adj.r.squared) * 100
+    golddata2012$logLin <- logLin.predict
+
+    ## printing
+    logLin
+    %>
+
+Where the adjusted R-squared equals to <%=summary(logLin)$adj.r.squared%> with a p-value of <%=round(anova(logLin)$'Pr(>F)'[1], 5)%>.
+
+### ggplot2
+
+Both models on a quick plot themed by our [backend](http://daroczig.github.com/pander/):
+
+<%=ggplot(golddata2012) + geom_point(aes(x=Year, y=Result)) + geom_smooth(aes(x=Year, y=nonLin), alpha=0.2) + geom_smooth(aes(x=Year, y=logLin, col = "blue"), alpha=0.2, col = "red") + opts(title = data$Event[1]) + ylab("Winning time") + xlab("") + scale_y_continuous(labels = ms) + theme_bw() + opts(legend.position = "none")%>
+
+### A complex plot
+
+Both models on a complex plot:
+
+<%=
+    ## saving options as tweaking some internals
+    eO <- evalsOptions()
+    pO <- panderOptions()
+    evalsOptions('width', 1100)
+    evalsOptions('height', 780)
+    evalsOptions('graph.unify', FALSE)
+%><%=
+    ## plotting
+    models <- c('nonLin', 'logLin')
+    plotPredictions(golddata, models)
+%><%=
+    ## resetting options
+    for (o in names(eO))
+        evalsOptions(o, eO[[o]])
+    for (o in names(pO))
+        panderOptions(o, pO[[o]])
+%>
+
+<%}%>
+
+
