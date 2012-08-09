@@ -4,7 +4,7 @@ Assigned developpers are show after each template between parenthesis. If no one
 
 ## Traditional statistics templates
 
-Can be found in rapport package (aL3xa & daroczig).
+Can be found in [rapport package](https://github.com/Rapporter/rapport) (@aL3xa & @daroczig).
 
 ## Wizard
 
@@ -20,20 +20,20 @@ The method would be automatically chosen based on the level of measurement of th
 
 #### Factor-factor
 
-  * chi-squared goodness-of-fit test (daroczig)
-  * crosstable (daroczig)
+  * chi-squared goodness-of-fit test (@daroczig)
+  * crosstable (@daroczig)
 
 #### Factor-numeric
 
-  * ANOVA OR t-test/Welch (based on the number of categories) with automatic normality test (tothg & aL3xa)
-  * Levine OR Brown-Forsythe test (automatic test for the underlying distribution) (tothg)
+  * ANOVA OR t-test/Welch (based on the number of categories) with automatic normality test (@tothg & @aL3xa)
+  * Levine OR Brown-Forsythe test (automatic test for the underlying distribution) (@tothg)
 
 #### Numeric-numeric
 
   * (linear) regression
-  * correlation (daroczig)
+  * correlation (@daroczig)
   * PCA
   * Kolmogorov-Smirnov test
   * CA
-  * two sample t-test (tothg & aL3xa)
+  * two sample t-test (@tothg & @aL3xa)
   * F test
