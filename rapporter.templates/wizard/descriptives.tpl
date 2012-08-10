@@ -8,7 +8,7 @@ Example:        rapport('descriptives', data=ius2008, var='gender')
                 rapport('descriptives', data=ius2008, var='age')
                 rapport('descriptives', data=mtcars, var='hp')
 
-var            | *variable[1]| Variable | Any variable to be analysed
+var            | *variable | Variable | Any variable to be analysed
 head-->
 
 # *<%=rp.name(var)%>*<%=ifelse(rp.label(var)==rp.name(var), '', sprintf(' ("%s")', rp.label(var)))%>
