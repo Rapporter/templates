@@ -75,7 +75,7 @@ TODO: add intro about chi^2
 table  <- table(row, col, deparse.level = 0) # no need for NAs from here
 t      <- suppressWarnings(chisq.test(table))
 lambda <- lambda.test(table)
-cramer <- sqrt(as.numeric(t$statistic)/(sum(table)*min(dim(table))))
+cramer <- sqrt(as.numeric(t$statistic) / (sum(table) * min(dim(table))))
 t
 %>
 
@@ -131,13 +131,23 @@ The variables seems to be independent based on Fisher's exact test.
 
 <% } %>
 
-# Direction of relationship
+<% if (t$p.value < 0.05 | f$p.value < 0.05) { %>
 
-TODO: only run if most tests were  OK
+# Direction of relationship
 
 ## Goodman and Kruskal's lambda
 
+TODO: add intro about lambda
+
+<%if (diff(unlist(lambda, use.names = FALSE)) != 0) { %>
+
 Based on [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal's_lambda) it seems that *<%=c(rp.name(col),rp.name(row))[which.max(lambda)]%>* ($\lambda$=<%=pander.return(max(as.numeric(lambda)))%>) has an effect on *<%=c(rp.name(col),rp.name(row))[which.min(lambda)]%>* ($\lambda$=<%=min(as.numeric(lambda))%>) if we assume both variables to be nominal.
+
+<% } else { %>
+
+The computed value for [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal's_lambda) is the same for both directions: <%=lambda$row%>. For this end, we do not know the direction of the relationship.
+
+<% }} %>
 
 # Charts
 
