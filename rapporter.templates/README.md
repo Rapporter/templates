@@ -20,7 +20,7 @@ The method would be automatically chosen based on the level of measurement of th
 
 #### Factor-factor
 
-  * chi-squared goodness-of-fit test (@daroczig)
+  * chi-squared homogeneity test (@daroczig)
   * crosstable (@daroczig)
 
 #### Factor-numeric
@@ -36,4 +36,4 @@ The method would be automatically chosen based on the level of measurement of th
   * Kolmogorov-Smirnov test
   * CA
   * two sample t-test (@tothg & @aL3xa)
-  * F test
+  * F test (@nagydaniel)
