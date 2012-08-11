@@ -2,6 +2,10 @@ Here goes the development versions of *rapporter* templates.
 
 Assigned developpers are show after each template between parenthesis. If no one is assigned, feel free to take any of them :)
 
+Strike-through means if a template is (almost) ready, so just minor issues remains.
+
+Please feel to use our [GH issue tracker](https://github.com/daroczig/rapporter.templates/issues) of Rapporter templates (and assign tasks, report bugs, suggest features etc.), we should not rely on podio here (leaving that for UI).
+
 ## Traditional statistics templates
 
 Can be found in [rapport package](https://github.com/Rapporter/rapport) (@aL3xa & @daroczig).
@@ -12,7 +16,7 @@ The below templates are made for the laymen: those who do not really know any st
 
 ### Descriptives
 
-This is to be forked from rapport package.
+~~This is to be forked from rapport package.~~
 
 ### Bivariate methods
 
@@ -21,7 +25,7 @@ The method would be automatically chosen based on the level of measurement of th
 #### Factor-factor
 
   * chi-squared homogeneity test (@daroczig)
-  * crosstable (@daroczig)
+  * ~~crosstable (@daroczig)~~
 
 #### Factor-numeric
 
@@ -31,7 +35,7 @@ The method would be automatically chosen based on the level of measurement of th
 #### Numeric-numeric
 
   * (linear) regression
-  * correlation (@daroczig)
+  * ~~correlation (@daroczig)~~
   * PCA
   * Kolmogorov-Smirnov test
   * CA
