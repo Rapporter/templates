@@ -79,6 +79,12 @@ cramer <- sqrt(as.numeric(t$statistic) / (sum(table) * min(dim(table))))
 t
 %>
 
+TODO: write about the requirements of the test (expected < 1 & 5)
+
+<%if (inherits(tryCatch(chisq.test(table), warning = function(w) w), 'warning')) { %>
+The requirements of the chi-squared test was not met, so [Yates's correction for continuity](http://en.wikipedia.org/wiki/Yates%27s_correction_for_continuity) applied. The approximation may be incorrect.
+<% } %>
+
 <%if (t$p.value < 0.05) { %>
 
 It seems that a real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the [degree of freedom](http://en.wikipedia.org/wiki/Degrees_of_freedom_(statistics)) being <%=as.numeric(t$parameter)%>^[Computed as: $df = (c - 1)(r-1)$ where $r$ refers to the number of rows and $c$ to the number of columns.]) at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(t$p.value)%>.
@@ -98,7 +104,6 @@ The residuals show the contribution to rejeting the null hypothesis at a cell le
 <%=
 set.caption(sprintf('Residuals: "%s" and "%s"', rp.name(row), rp.name(col)))
 set.alignment(row.names = "right")
-table	  <- table(row, col, deparse.level = 0)
 table.res <- suppressWarnings(CrossTable(table, asresid = TRUE))$asr
 table.res <- round(table.res, 2)
 table.res.highlow  <- which(table.res < -2 | table.res > 2, arr.ind = TRUE)
@@ -118,10 +123,10 @@ if (nrow(table.res.highlow) > 0) {
 TODO: add intro about Fisher's test
 
 <%=
-f <- fisher.test(table, hybrid = TRUE, workspace = 1e6)
+f <- suppressWarnings(fisher.test(table, hybrid = TRUE, workspace = 1e6))
 %>
 
-<% if (t$p.value < 0.05) { %>
+<% if (f$p.value < 0.05) { %>
 
 The variables seems to be dependent based on Fisher's exact test at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(f$p.value)%>.
 
