@@ -15,7 +15,7 @@ head-->
 
 Two variables specified:
 
- * "<%=rp.name(row)%>"<%=ifelse(rp.label(row)==rp.name(row), '', sprintf(' ("%s")', rp.label(row)))%> with <%=rp.valid(as.numeric(row))%> valued values and
+ * "<%=rp.name(row)%>"<%=ifelse(rp.label(row)==rp.name(row), '', sprintf(' ("%s")', rp.label(row)))%> with <%=rp.valid(as.numeric(row))%> valid values and
  * "<%=rp.name(col)%>"<%=ifelse(rp.label(col)==rp.name(col), '', sprintf(' ("%s")', rp.label(col)))%> with <%=rp.valid(as.numeric(col))%> valid values.
 
 TODO: add intr about crosstable
@@ -127,7 +127,7 @@ The variables seems to be dependent based on Fisher's exact test at the [signifi
 
 <% } else { %>
 
-The variables seems to be independent based on Fisher's exact test.
+The variables seems to be independent based on Fisher's exact test. TODO: p.value
 
 <% } %>
 
@@ -151,30 +151,19 @@ The computed value for [Goodman and Kruskal's lambda](http://en.wikipedia.org/wi
 
 # Charts
 
-TODO: add details and prettify
+TODO: add intro about heatmap
+
+<%=
+set.caption('Heatmap')
+ggfluctuation(table, type = 'colour') + geom_tile() + xlab('') + ylab('') + labs(fill = 'Count')
+%>
+
+
+TODO: add intro about mosaic charts
 
 <%=
 set.caption('Mosaic chart')
-mosaicplot(table, shade=T, main=NULL)
-%>
-
-<%=
-t        <- melt(table)
-t$x      <- rowSums(table)/sum(table) * 100
-t$xmax   <- cumsum(rowSums(table))/sum(table) * 100
-t$xmin   <- t$xmax - t$x
-t$y      <- t$value / rep(rowSums(table), ncol(table)) * 100
-t        <- t[with(t, order(Var.1)), ]
-t$ymax   <- cumsum(t$y) - as.vector(sapply(1:nrow(table) - 1, rep, ncol(table))) * 100
-t$ymin   <- t$ymax - t$y
-t$xxtext <- with(t, xmin + (xmax - xmin)/2)
-t$xytext <- as.vector(sapply(rep(c(103, -3), length.out = nrow(table)), rep, ncol(table)))
-t$yytext <- with(t, ymin + (ymax - ymin)/2)[1:ncol(table)]
-t$yxtext <- t$xxtext[1]
-ggplot(t, aes(ymin = ymin, ymax = ymax, xmin = xmin, xmax = xmax, fill = Var.2)) + geom_rect(colour = 'white') + geom_text(aes(x = xxtext, y = xytext, label = Var.1), size = 4) +  geom_text(aes(x = yxtext, y = yytext, label = Var.2), size = 4) + xlab('') + ylab('') + opts(legend.position = 'none')
-%>
-
-<%=
+glp      <- panderOptions('graph.legend.position')
 panderOptions('graph.legend.position', 'top')
 t        <- melt(table)
 t$x      <- rowSums(table)/sum(table) * 100
@@ -187,7 +176,10 @@ t$ymin   <- t$ymax - t$y
 t$xxtext <- with(t, xmin + (xmax - xmin)/2)
 t$xytext <- as.vector(sapply(rep(c(103, -3), length.out = nrow(table)), rep, ncol(table)))
 ggplot(t, aes(ymin = ymin, ymax = ymax, xmin = xmin, xmax = xmax, fill = Var.2)) + geom_rect() + geom_rect(colour = 'white', show_guide = FALSE) + geom_text(aes(x = xxtext, y = xytext, label = Var.1), size = 4) + xlab('') + ylab('') + opts(legend.position = 'top') + labs(fill = '')
+panderOptions('graph.legend.position', glp)
 %>
+
+TODO: add intro about fluctuation diagrams
 
 <%=
 set.caption('Fluctuation diagram')
