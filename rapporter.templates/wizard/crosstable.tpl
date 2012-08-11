@@ -81,13 +81,13 @@ t
 
 <%if (t$p.value < 0.05) { %>
 
-It seems that a real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the degree of freedom being <%=as.numeric(t$parameter)%>) at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=t$p.value%>.
+It seems that a real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the degree of freedom being <%=as.numeric(t$parameter)%>) at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(t$p.value)%>.
 
 The association between the two variables seems to be <%=ifelse(cramer < 0.5, "weak", "strong")%> based on Cramer\'s V (<%=cramer%>).
 
 <% } else { %>
 
-It seems that no real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the degree of freedom being <%=as.numeric(t$parameter)%>) at the significance level of <%=t$p.value%>.
+It seems that no real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the degree of freedom being <%=as.numeric(t$parameter)%>) at the significance level of <%=add.significance.stars(t$p.value)%>.
 
 <% } %>
 
@@ -123,11 +123,11 @@ f <- fisher.test(table, hybrid = TRUE, workspace = 1e6)
 
 <% if (t$p.value < 0.05) { %>
 
-The variables seems to be dependent based on Fisher's exact test at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=f$p.value%>.
+The variables seems to be dependent based on Fisher's exact test at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(f$p.value)%>.
 
 <% } else { %>
 
-The variables seems to be independent based on Fisher's exact test. TODO: p.value
+The variables seems to be independent based on Fisher's exact test at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(f$p.value)%>.
 
 <% } %>
 
