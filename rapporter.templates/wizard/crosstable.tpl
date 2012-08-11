@@ -175,6 +175,21 @@ ggplot(t, aes(ymin = ymin, ymax = ymax, xmin = xmin, xmax = xmax, fill = Var.2))
 %>
 
 <%=
+panderOptions('graph.legend.position', 'top')
+t        <- melt(table)
+t$x      <- rowSums(table)/sum(table) * 100
+t$xmax   <- cumsum(rowSums(table))/sum(table) * 100
+t$xmin   <- t$xmax - t$x
+t$y      <- t$value / rep(rowSums(table), ncol(table)) * 100
+t        <- t[with(t, order(Var.1)), ]
+t$ymax   <- cumsum(t$y) - as.vector(sapply(1:nrow(table) - 1, rep, ncol(table))) * 100
+t$ymin   <- t$ymax - t$y
+t$xxtext <- with(t, xmin + (xmax - xmin)/2)
+t$xytext <- as.vector(sapply(rep(c(103, -3), length.out = nrow(table)), rep, ncol(table)))
+ggplot(t, aes(ymin = ymin, ymax = ymax, xmin = xmin, xmax = xmax, fill = Var.2)) + geom_rect() + geom_rect(colour = 'white', show_guide = FALSE) + geom_text(aes(x = xxtext, y = xytext, label = Var.1), size = 4) + xlab('') + ylab('') + opts(legend.position = 'top') + labs(fill = '')
+%>
+
+<%=
 set.caption('Fluctuation diagram')
 ggfluctuation(table) + xlab('') + ylab('')
 %>
