@@ -158,3 +158,7 @@ set.caption('Mosaic chart')
 mosaicplot(table, shade=T, main=NULL)
 %>
 
+<%=
+set.caption('Fluctuation diagram')
+ggfluctuation(table) + xlab('') + ylab('')
+%>
