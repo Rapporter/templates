@@ -118,7 +118,7 @@ if (nrow(table.res.highlow) > 0) {
 TODO: add intro about Fisher's test
 
 <%=
-f <- fisher.test(table)
+f <- fisher.test(table, hybrid = TRUE, workspace = 1e6)
 %>
 
 <% if (t$p.value < 0.05) { %>
@@ -157,3 +157,4 @@ TODO: add details and prettify
 set.caption('Mosaic chart')
 mosaicplot(table, shade=T, main=NULL)
 %>
+
