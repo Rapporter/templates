@@ -159,6 +159,22 @@ mosaicplot(table, shade=T, main=NULL)
 %>
 
 <%=
+t        <- melt(table)
+t$x      <- rowSums(table)/sum(table) * 100
+t$xmax   <- cumsum(rowSums(table))/sum(table) * 100
+t$xmin   <- t$xmax - t$x
+t$y      <- t$value / rep(rowSums(table), ncol(table)) * 100
+t        <- t[with(t, order(Var.1)), ]
+t$ymax   <- cumsum(t$y) - as.vector(sapply(1:nrow(table) - 1, rep, ncol(table))) * 100
+t$ymin   <- t$ymax - t$y
+t$xxtext <- with(t, xmin + (xmax - xmin)/2)
+t$xytext <- as.vector(sapply(rep(c(103, -3), length.out = nrow(table)), rep, ncol(table)))
+t$yytext <- with(t, ymin + (ymax - ymin)/2)[1:ncol(table)]
+t$yxtext <- t$xxtext[1]
+ggplot(t, aes(ymin = ymin, ymax = ymax, xmin = xmin, xmax = xmax, fill = Var.2)) + geom_rect(colour = 'white') + geom_text(aes(x = xxtext, y = xytext, label = Var.1), size = 4) +  geom_text(aes(x = yxtext, y = yytext, label = Var.2), size = 4) + xlab('') + ylab('') + opts(legend.position = 'none')
+%>
+
+<%=
 set.caption('Fluctuation diagram')
 ggfluctuation(table) + xlab('') + ylab('')
 %>
