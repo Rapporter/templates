@@ -85,6 +85,7 @@ TODO: write about the requirements of the test (expected < 1 & 5)
 The requirements of the chi-squared test was not met, so [Yates's correction for continuity](http://en.wikipedia.org/wiki/Yates%27s_correction_for_continuity) applied. The approximation may be incorrect.
 <% } %>
 
+<%if (!is.na(cramer)) {%>
 <%if (t$p.value < 0.05) { %>
 
 It seems that a real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the [degree of freedom](http://en.wikipedia.org/wiki/Degrees_of_freedom_(statistics)) being <%=as.numeric(t$parameter)%>^[Computed as: $df = (c - 1)(r-1)$ where $r$ refers to the number of rows and $c$ to the number of columns.]) at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(t$p.value)%>.
@@ -144,7 +145,7 @@ The variables seems to be independent based on Fisher's exact test at the [signi
 
 TODO: add intro about lambda
 
-<%if (diff(unlist(lambda, use.names = FALSE)) != 0) { %>
+<%if (diff(unlist(lambda, use.names = FALSE)) != 0 & !is.na(cramer)) { %>
 
 Based on [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal's_lambda) it seems that *<%=c(rp.name(col),rp.name(row))[which.max(lambda)]%>* ($\lambda$=<%=pander.return(max(as.numeric(lambda)))%>) has an effect on *<%=c(rp.name(col),rp.name(row))[which.min(lambda)]%>* ($\lambda$=<%=min(as.numeric(lambda))%>) if we assume both variables to be nominal.
 
@@ -152,7 +153,9 @@ Based on [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and
 
 The computed value for [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal's_lambda) is the same for both directions: <%=lambda$row%>. For this end, we do not know the direction of the relationship.
 
-<% }} %>
+<% }}} else { %>
+Moreover: **it seems that the provided variables do not fit a real crosstable**.
+<% } %>
 
 # Charts
 
