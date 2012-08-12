@@ -1,0 +1,229 @@
+% EasyStats LTD
+% Predictions for today
+% 2012
+
+<%=
+## loading required packages
+suppressPackageStartupMessages(library(XML))
+suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
+
+## set options
+evalsOptions('graph.unify', TRUE)
+panderOptions('table.split.table', Inf)
+panderOptions('graph.symbol', 19)
+panderOptions('graph.legend.position', 'top')
+if (grepl("w|W", .Platform$OS.type))
+    windowsFonts("Trebuchet MS" = windowsFont("Trebuchet MS"))
+panderOptions('graph.fontfamily', "Trebuchet MS")
+panderOptions('graph.background', 'transparent')
+
+## dataset URL
+url <- 'http://en.wikipedia.org/wiki/Marathon_world_record_progression'
+
+## should weights apply?
+weights <- TRUE
+
+#' Pretty time printing
+#' @param sec integer
+#' @return character in \code{hours:minutes:seconds} format
+#' @author Rapporter Dev Team
+ms <- function(sec) {
+    sapply(sec, function(sec) {
+        sec <- round(sec)
+        minute <- sec %/% 60
+        if (minute > 59) {
+            sec    <- sprintf("%02d", sec - minute * 60)
+            hours  <- minute %/% 60
+            minute <- sprintf("%02d", minute - hours * 60)
+            paste(hours, minute, sec, sep=":")
+        } else {
+            sec <- sprintf("%02d", sec - minute * 60)
+            paste(minute, sec, sep=":")
+        }
+    })
+}
+
+#' Revert pretty time printing
+#' @param sec character in \code{hours:minutes:seconds} format
+#' @return numeric
+rms <- function(text) {
+    sapply(text, function(x) {
+        x <- as.numeric(strsplit(x, ':')[[1]])
+        if (length(x) == 1)
+            return(x)
+        if (length(x) == 2)
+            return(x[1] * 60 + x[2])
+        if (length(x) == 3)
+            return(x[1] * 60^2 + x[2] * 60 + x[3])
+    }, USE.NAMES = FALSE)
+}
+
+#' Plot predictions
+#' @param df a data frame with Year, Result columns
+#' @param models predefined models' names to plot
+plotPredictions <- function(df, models) {
+
+    ## custom options
+    panderOptions('graph.fontfamily', "Trebuchet MS")
+
+    ## custom variables - satisfying our DRY needs
+    Y         <- df[, 'Date']
+    Y2012     <- years
+    R         <- df[, 'Time']
+    allvalues <- unlist(c(R, mget(paste0(models, '.predict'), envir = parent.frame())))
+    ff        <- panderOptions('graph.fontfamily')
+    fc        <- panderOptions('graph.fontcolor')
+    gc        <- panderOptions('graph.colors')
+    gt        <- panderOptions('graph.grid.lty')
+    gcc       <- panderOptions('graph.grid.color')
+    mn        <- mget(paste0(models, '.name'), envir = parent.frame())
+
+    ## custom par settings
+    par(
+      family   = ff,
+      lwd      = 2,
+      pch      = panderOptions('graph.symbol'),
+      col.axis = fc, col.lab = fc, col.main = fc, col.sub = fc,
+      mar = c(3,4,3,3), family = ff, font = 4)
+
+    ## results
+    plot(Y, R, ylim = c(min(allvalues), max(allvalues)), xlim = c(min(Y), max(Y2012)), xaxt = "n", yaxt= "n", xlab = "", ylab = "", cex.lab = 2, cex.main = 2, cex.axis = 2, cex = 2, pch = 16, bg = "transparent", family = ff, font = 4)
+
+    ## title
+    mtext('Marathon records: 1912-2012', line = 1, side = 3, family = ff, cex=2.5, font=4, col ='black')
+
+    ## get y axis's ticks
+    ylime <- trunc(c(min(R), max(R)))
+    yperiod <- trunc(diff(ylime)/5)
+    if (diff(ylime) < 5) {
+        ylime   <- round(c(max(R), min(R)), 2)
+        yperiod	<- round(diff(ylime) / 5, 2)
+    }
+    ylime   <- c(ylime[1], ylime[1] + 1:5 * yperiod)
+
+    ## draw x axis
+    axis(1, at = Y, Y, cex = 2, family = ff, font=4)
+    for (y in Y)
+        abline(v = y, lty = gt, col = gcc, lwd = 0.5)
+
+    ## draw y axis
+    par(las = 1, family = ff)
+    axis(2, at = ylime, ms(ylime), cex = 2, family = ff, font=4)
+    for (y in ylime)
+        abline(h = y, lty = gt, col = gcc, lwd = 0.5)
+
+    points(Y, R)
+
+    ## plotting models' lines & text
+    for (m in models) {
+        lines(Y2012, get(paste0(m, '.predict')), col = gc[which(m == models)])
+        lines(Y2012, get(paste0(m, '.predict')), lwd = get(paste0(m, '.width')), col = paste0(gc[which(m == models)], '44'))
+        points(tail(years, 1), tail(get(paste0(m, '.predict')), 1), pch = 19, col = gc[which(m == models)], cex = 3.5)
+        yy <- (tail(years, 1) - 1000)
+        xx <- tail(get(paste0(m, '.predict')), 1) + yperiod/6
+        text(yy, xx, ms(trunc(tail(get(paste0(m, '.predict')), 1))), col = gc[which(m == models)], cex = 2)
+    }
+
+    ## add a custom legend
+    mnames <- unlist(mget(paste0(models, '.name'), envir = parent.frame()), use.names = FALSE)
+    legend("topright", mnames, lty = rep(1, times = length(models)), pch = rep(19, times = length(models)), col = rep(gc[1:length(models)], times = 2), adj = c(0, .6), cex = 2, text.col = 'black', text.width = strwidth(paste(mnames, collapse = ' ')))
+}
+%>
+
+
+
+<%=
+    ## fetching data from \url{databaseolympics.com}
+    data <- readHTMLTable(readLines(url), which=2, header=TRUE)
+%>
+
+## Men's marathon
+
+### Historical data
+
+We have fetched some data from [wikipedia](<%=url%>):
+
+<%=data[, 1:5]%>
+
+<%=
+    ## transforming data
+    data$Time <- as.character(data$Time)
+    data$Time <- rms(data$Time)
+    lct <- Sys.getlocale("LC_TIME")
+    devnull <- Sys.setlocale("LC_TIME", "C")
+    data$Date <- as.character(data$Date)
+    data$Date <- as.Date(data$Date, '%B %d, %Y')
+
+    # prediction years
+    years <- as.numeric(as.Date(as.character(1912:2012), '%Y'))
+
+    ## checking what we have
+    #plot(data$Date, data$Time, type = "l")
+%>
+
+
+### Non-linear model
+
+And fitted a non-linear model on the winning times:
+
+    <%=
+    ## fitting a non-linear model
+    data$date <- as.numeric(data$Date)
+    data$date2 <- data$date**2
+    data$date3 <- data$date**3
+    data$date4 <- data$date**4
+    nonLin     <- suppressWarnings(lm(Time ~ date * date2 * date3 * date4, data = data))
+    nonLin.name    <- 'power prediction'
+    nonLin.predict <- suppressWarnings(predict(nonLin, newdata = data.frame(date = years, date2 = years^2, date3 = years^3, date4 = years^4)))
+    nonLin.width   <- (100 - ((1 - mean(summary(nonLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(nonLin)$adj.r.squared) * 100
+    ## golddata2012   <- rbind(golddata, c(2012, rep(NA, times = ncol(golddata)-1)))
+    ## golddata2012$nonLin <- nonLin.predict
+
+    ## printing
+    nonLin
+    %>
+
+Where the adjusted R-squared equals to <%=summary(nonLin)$adj.r.squared%> with a p-value of <%=round(anova(nonLin)$'Pr(>F)'[1], 5)%>.
+
+### Log-linear model
+
+Our log-linear model looks like:
+
+    <%=
+    ## fitting a log-linear model
+    logLin          <- lm(log(Time) ~ date, data = data)
+    logLin.name     <- 'simple prediction'
+    logLin.predict  <- exp(predict(logLin, newdata = data.frame(date = years)))
+    logLin.width    <- (100 - ((1 - mean(summary(logLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(logLin)$adj.r.squared) * 100
+    ## golddata2012$logLin <- logLin.predict
+
+    ## printing
+    logLin
+    %>
+
+Where the adjusted R-squared equals to <%=summary(logLin)$adj.r.squared%> with a p-value of <%=round(anova(logLin)$'Pr(>F)'[1], 5)%>.
+
+### A complex plot
+
+Both models on a complex plot:
+
+<%=
+    ## saving options as tweaking some internals
+    eO <- evalsOptions()
+    pO <- panderOptions()
+    evalsOptions('width', 1100)
+    evalsOptions('height', 1100)
+    evalsOptions('graph.unify', FALSE)
+%><%=
+    ## plotting
+    models <- c('nonLin', 'logLin')
+    plotPredictions(data, models)
+%><%=
+    ## resetting options
+    for (o in names(eO))
+        evalsOptions(o, eO[[o]])
+    for (o in names(pO))
+        panderOptions(o, pO[[o]])
+    Sys.setlocale("LC_TIME", lct)
+%>
+
