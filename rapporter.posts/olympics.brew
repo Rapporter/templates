@@ -23,10 +23,14 @@ panderOptions('graph.background', 'transparent')
 ##           "http://www.databaseolympics.com/sport/sportevent.htm?sp=CAN&enum=340",
 ##           "http://www.databaseolympics.com/sport/sportevent.htm?sp=SHO&enum=580")
 #### swimming 20120802 - afternoon
-urls <- c('http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=490',
-          'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=170',
-          'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=220',
-          'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=420')
+#urls <- c('http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=490',
+#          'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=170',
+#          'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=220',
+#          'http://www.databaseolympics.com/sport/sportevent.htm?sp=SWI&enum=420')
+urls <- 'http://www.databaseolympics.com/sport/sportevent.htm?sp=ATH&enum=180'
+
+## should weights apply?
+weights <- TRUE
 
 #' Pretty time printing
 #' @param sec numeric
@@ -112,8 +116,10 @@ plotPredictions <- function(df, models) {
         lines(Y2012, get(paste0(m, '.predict')), col = gc[which(m == models)])
         lines(Y2012, get(paste0(m, '.predict')), lwd = get(paste0(m, '.width')), col = paste0(gc[which(m == models)], '44'))
         points(2012, tail(get(paste0(m, '.predict')), 1), pch = 19, col = gc[which(m == models)], cex = 3.5)
-        yy <- 2012 - round((2012-min(Y)) / 20) * (which(m == models) - 1)
-        xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/5 * (2 - which(m == models)))
+        ## yy <- 2012 - round((2012-min(Y)) / 20) * (which(m == models) - 1)
+        ## xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/5 * (2 - which(m == models)))
+        yy <- 2012 - round((2012-min(Y)) / 25) * (2 - which(m == models))
+        xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/7 * (which(m == models) - 1))
         text(yy, xx, ms(trunc(tail(get(paste0(m, '.predict')), 1))), col = gc[which(m == models)], cex = 2)
     }
 
@@ -166,7 +172,10 @@ And fitted a non-linear model on the winning times:
     golddata$year2 <- golddata$Year**2
     golddata$year3 <- golddata$Year**3
     golddata$year4 <- golddata$Year**4
-    nonLin         <- suppressWarnings(lm(Result ~ Year * year2 * year3 * year4, data = golddata))
+    if (weights)
+        nonLin     <- suppressWarnings(lm(Result ~ Year * year2 * year3 * year4, weights=(Year-min(Year)+4), data = golddata))
+    else
+        nonLin     <- suppressWarnings(lm(Result ~ Year * year2 * year3 * year4, data = golddata))
     nonLin.name    <- 'power prediction'
     nonLin.predict <- suppressWarnings(predict(nonLin, newdata = data.frame(Year = years, year2 = years^2, year3 = years^3, year4 = years^4)))
     nonLin.width   <- (100 - ((1 - mean(summary(nonLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(nonLin)$adj.r.squared) * 100
@@ -185,7 +194,10 @@ Our log-linear model looks like:
 
     <%=
     ## fitting a log-linear model
-    logLin          <- lm(log(Result) ~ Year, data = golddata)
+    if (weights)
+        logLin      <- lm(log(Result) ~ Year, weights=(Year-min(Year)+4), data = golddata)
+    else
+        logLin      <- lm(log(Result) ~ Year, data = golddata)
     logLin.name     <- 'simple prediction'
     logLin.predict  <- exp(predict(logLin, newdata = data.frame(Year = years)))
     logLin.width    <- (100 - ((1 - mean(summary(logLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(logLin)$adj.r.squared) * 100
@@ -212,7 +224,7 @@ Both models on a complex plot:
     eO <- evalsOptions()
     pO <- panderOptions()
     evalsOptions('width', 1100)
-    evalsOptions('height', 780)
+    evalsOptions('height', 1100)
     evalsOptions('graph.unify', FALSE)
 %><%=
     ## plotting
