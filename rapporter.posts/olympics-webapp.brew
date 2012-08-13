@@ -35,16 +35,24 @@ panderOptions('graph.background', 'transparent')
 ms <- function(sec, transform = TRUE) {
     sapply(sec, function(sec) {
         if (transform) {
+            if (sec < 60) {
+                msec <- sec %% 1
+                if (msec == 0)
+                    msec <- ''
+                else
+                    msec <- paste0('.', round(msec, 2) * 100)
+            } else
+                msec <- ''
             sec <- round(sec)
             minute <- sec %/% 60
             if (minute > 59) {
                 sec    <- sprintf("%02d", sec - minute * 60)
                 hours  <- minute %/% 60
                 minute <- sprintf("%02d", minute - hours * 60)
-                paste(hours, minute, sec, sep=":")
+                paste0(paste(hours, minute, sec, sep=":"), msec)
             } else {
                 sec <- sprintf("%02d", sec - minute * 60)
-                paste(minute, sec, sep=":")
+                paste0(paste(minute, sec, sep=":"), msec)
             }
         } else
             round(sec, 2)
