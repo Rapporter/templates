@@ -29,38 +29,44 @@ panderOptions('graph.background', 'transparent')
 
 #' Pretty time printing
 #' @param sec integer
-#' @param transfrom if set to FALSE the input will be returned without any tweaks
+#' @param transform if set to FALSE the input will be returned without any tweaks
 #' @return character in \code{hours:minutes:seconds} format
 #' @author Rapporter Dev Team
-ms <- function(sec, transfrom = TRUE) {
+ms <- function(sec, transform = TRUE) {
     sapply(sec, function(sec) {
-        sec <- round(sec)
-        minute <- sec %/% 60
-        if (minute > 59) {
-            sec    <- sprintf("%02d", sec - minute * 60)
-            hours  <- minute %/% 60
-            minute <- sprintf("%02d", minute - hours * 60)
-            paste(hours, minute, sec, sep=":")
-        } else {
-            sec <- sprintf("%02d", sec - minute * 60)
-            paste(minute, sec, sep=":")
-        }
+        if (transform) {
+            sec <- round(sec)
+            minute <- sec %/% 60
+            if (minute > 59) {
+                sec    <- sprintf("%02d", sec - minute * 60)
+                hours  <- minute %/% 60
+                minute <- sprintf("%02d", minute - hours * 60)
+                paste(hours, minute, sec, sep=":")
+            } else {
+                sec <- sprintf("%02d", sec - minute * 60)
+                paste(minute, sec, sep=":")
+            }
+        } else
+            sec
     })
 }
 
 #' Revert pretty time printing
 #' @param sec character in \code{hours:minutes:seconds} format
-#' @param transfrom if set to FALSE the input will be returned without any tweaks
+#' @param transform if set to FALSE the input will be returned without any tweaks
 #' @return numeric
 rms <- function(text, transform = TRUE) {
     sapply(text, function(x) {
-        x <- as.numeric(strsplit(x, ':')[[1]])
-        if (length(x) == 1)
-            return(x)
-        if (length(x) == 2)
-            return(x[1] * 60 + x[2])
-        if (length(x) == 3)
-            return(x[1] * 60^2 + x[2] * 60 + x[3])
+        if (transform) {
+            x <- as.numeric(strsplit(x, ':')[[1]])
+            if (length(x) == 1)
+                return(x)
+            if (length(x) == 2)
+                return(x[1] * 60 + x[2])
+            if (length(x) == 3)
+                return(x[1] * 60^2 + x[2] * 60 + x[3])
+        } else
+            as.numeric(x)
     }, USE.NAMES = FALSE)
 }
 
@@ -114,7 +120,7 @@ plotPredictions <- function(df, models) {
 
     ## draw y axis
     par(las = 1, family = ff)
-    axis(2, at = ylime, ms(ylime), cex = 2, family = ff, font=4)
+    axis(2, at = ylime, ms(ylime, resultInTime), cex = 2, family = ff, font=4)
     for (y in ylime)
         abline(h = y, lty = gt, col = gcc, lwd = 0.5)
 
@@ -129,7 +135,7 @@ plotPredictions <- function(df, models) {
         ## xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/5 * (2 - which(m == models)))
         yy <- 2012 - round((2012-min(Y)) / 25) * (2 - which(m == models))
         xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/7 * (which(m == models) - 1))
-        text(yy, xx, ms(trunc(tail(get(paste0(m, '.predict')), 1))), col = gc[which(m == models)], cex = 2)
+        text(yy, xx, ms(trunc(tail(get(paste0(m, '.predict')), 1)), resultInTime), col = gc[which(m == models)], cex = 2)
     }
 
     ## add a custom legend
@@ -161,16 +167,18 @@ plotPredictions <- function(df, models) {
     ## just dealing with the winners ATM
     golddata <- subset(d, Medal %in% "GOLD")
 
+    ## are we dealing with time results?
+    resultInTime <- any(grepl(':', golddata$Result))
+
     ## transforming data
     d$Event            <- as.character(d$Event)
     golddata$Year      <- as.numeric(as.character(golddata$Year))
     years              <- c(as.numeric(as.character(sort(unique(golddata$Year)))), 2012)
-    golddata$Result    <- rms(as.character(golddata$Result))
+    golddata$Result    <- rms(as.character(golddata$Result), resultInTime)
     rownames(golddata) <- NULL
 
     ## weights
     weights <- TRUE
-
 %>
 
 ## <%=d$Event[1]%>
@@ -215,15 +223,13 @@ And fitted a non-linear model on the winning times:
 
 #### Validations of the Model Assumptions
 
-<%=
-pandoc.table.return(summary(gvlma(nonLin)), split.tables=Inf)
-%>
+TODO
 
 #### Diagnostic plot
 
 <%=
-    par(mfrow = c(2, 2))
-    +plot(nonLin)
+par(mfrow = c(2, 2))
++plot(nonLin)
 %>
 
 Where the adjusted R-squared equals to <%=summary(nonLin)$adj.r.squared%> with a p-value of <%=round(anova(nonLin)$'Pr(>F)'[1], 5)%>.
@@ -257,8 +263,8 @@ pandoc.table.return(summary(gvlma(logLin)), split.tables=Inf)
 #### Diagnostic plot
 
 <%=
-    par(mfrow = c(2, 2))
-    +plot(logLin)
+par(mfrow = c(2, 2))
++plot(logLin)
 %>
 
 Where the adjusted R-squared equals to <%=summary(logLin)$adj.r.squared%> with a p-value of <%=round(anova(logLin)$'Pr(>F)'[1], 5)%>.
@@ -267,7 +273,12 @@ Where the adjusted R-squared equals to <%=summary(logLin)$adj.r.squared%> with a
 
 Both models on a quick plot themed by our [backend](http://daroczig.github.com/pander/):
 
-<%=ggplot(golddata2012) + geom_point(aes(x=Year, y=Result)) + geom_smooth(aes(x=Year, y=nonLin), alpha=0.2) + geom_smooth(aes(x=Year, y=logLin, col = "blue"), alpha=0.2, col = "red") + opts(title = d$Event[1]) + ylab("") + xlab("") + scale_y_continuous(labels = ms) + theme_bw() + opts(legend.position = "none")%>
+<%=
+g <- ggplot(golddata2012) + geom_point(aes(x=Year, y=Result)) + geom_smooth(aes(x=Year, y=nonLin), alpha=0.2) + geom_smooth(aes(x=Year, y=logLin, col = "blue"), alpha=0.2, col = "red") + opts(title = d$Event[1]) + ylab("") + xlab("") + theme_bw() + opts(legend.position = "none")
+if (resultInTime)
+    g <- g + scale_y_continuous(labels = ms)
+g
+%>
 
 ### A complex plot
 
