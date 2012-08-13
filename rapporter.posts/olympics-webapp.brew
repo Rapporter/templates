@@ -163,16 +163,22 @@ plotPredictions <- function(df, models) {
 
     ## just dealing with the winners ATM
     golddata <- subset(d, Medal %in% "GOLD")
-
+	## Just dealing with the same Events
+	test.Event <- d$Event[!sapply(d$Event, grepl, "")]
+	golddata <- subset(golddata, test.Event %in% tail(test.Event, 1))
+	## Treat Relays duplications
+	test.Year <- table(as.numeric(as.character(golddata$Year)))
+	golddata <- golddata[c(1, 1+cumsum(as.numeric(test.Year[-length(test.Year)]))),]
+	
     ## transforming data
     d$Event            <- as.character(d$Event)
     golddata$Year      <- as.numeric(as.character(golddata$Year))
     years              <- c(as.numeric(as.character(sort(unique(golddata$Year)))), 2012)
     golddata$Result    <- as.character(golddata$Result)
 	in.time <- 1
-	if (grepl(tail(golddata$Result, 1), ':'))
-		golddata$Result    <- rms(as.character(golddata$Result), in.time)
-	else
+	if (grepl(tail(golddata$Result, 1), ':')) {
+		golddata$Result    <- rms(as.character(golddata$Result), in.time) 
+	} else
 		in.time <- 0
     rownames(golddata) <- NULL
 
