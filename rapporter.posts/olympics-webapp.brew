@@ -1,5 +1,5 @@
 % Anonymous user
-% Predictions about Olypics
+% Predictions about Olympics
 % 2012
 
 ## TODO
@@ -28,32 +28,11 @@ panderOptions('graph.fontfamily', "Trebuchet MS")
 panderOptions('graph.background', 'transparent')
 
 #' Pretty time printing
-#' @param sec numeric
-#' @return character in \code{minutes:seconds} format
-#' @author Rapporter Dev Team
-ms <- function(sec) {
-    minute <- sec %/% 60
-    sec <- sprintf("%02d", sec - minute * 60)
-    paste(minute, sec, sep=":")
-}
-
-#' Revert pretty time printing
-#' @param sec character in \code{minutes:seconds} format
-#' @return numeric
-rms <- function(text) {
-    sapply(text, function(x) {
-        x <- as.numeric(strsplit(x, ':')[[1]])
-        if (length(x) == 1)
-            x
-        else
-            x[1] * 60 + x[2]
-        }, USE.NAMES = FALSE)
-}
-#' Pretty time printing
 #' @param sec integer
+#' @param transfrom if set to FALSE the input will be returned without any tweaks
 #' @return character in \code{hours:minutes:seconds} format
 #' @author Rapporter Dev Team
-ms <- function(sec) {
+ms <- function(sec, transfrom = TRUE) {
     sapply(sec, function(sec) {
         sec <- round(sec)
         minute <- sec %/% 60
@@ -71,8 +50,9 @@ ms <- function(sec) {
 
 #' Revert pretty time printing
 #' @param sec character in \code{hours:minutes:seconds} format
+#' @param transfrom if set to FALSE the input will be returned without any tweaks
 #' @return numeric
-rms <- function(text) {
+rms <- function(text, transform = TRUE) {
     sapply(text, function(x) {
         x <- as.numeric(strsplit(x, ':')[[1]])
         if (length(x) == 1)
@@ -190,6 +170,7 @@ plotPredictions <- function(df, models) {
 
     ## weights
     weights <- TRUE
+
 %>
 
 ## <%=d$Event[1]%>
@@ -218,7 +199,7 @@ And fitted a non-linear model on the winning times:
     golddata$year3 <- golddata$Year**3
     golddata$year4 <- golddata$Year**4
     if (weights) {
-        nonLin     <- suppressWarnings(lm(Result ~ Year * year2 * year3 * year4, weights=(Year-min(Year)+4), data = golddata))
+        nonLin     <- suppressWarnings(lm(Result ~ Year * year2 * year3 * year4, weights = ((Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year)), data = golddata))
     } else {
         nonLin     <- suppressWarnings(lm(Result ~ Year * year2 * year3 * year4, data = golddata))
     }
@@ -254,7 +235,7 @@ Our log-linear model looks like:
 <%=
     ## fitting a log-linear model
     if (weights) {
-        logLin      <- lm(log(Result) ~ Year, weights=(Year-min(Year)+4), data = golddata)
+        logLin      <- lm(log(Result) ~ Year, weights = ((Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year)), data = golddata)
     } else {
         logLin      <- lm(log(Result) ~ Year, data = golddata)
     }
