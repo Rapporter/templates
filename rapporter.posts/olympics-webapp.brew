@@ -4,7 +4,7 @@
 
 ## TODO
 
-  * when to drop a database based on few values (now set to '<10')?
+  * when to drop a database based on few values (now set to `<10`)?
   * when to apply `weights`? Now applied to all.
 
 <%=
@@ -153,8 +153,9 @@ plotPredictions <- function(df, models) {
     }
 
     ## add a custom legend
+    l.pos <- ifelse(xx < mean(R), 'topright', 'bottomright')
     mnames <- unlist(mget(paste0(models, '.name'), envir = parent.frame()), use.names = FALSE)
-    legend("topright", mnames, lty = rep(1, times = length(models)), pch = rep(19, times = length(models)), col = rep(gc[1:length(models)], times = 2), adj = c(0, .6), cex = 2, text.col = 'black', text.width = strwidth(paste(mnames, collapse = ' ')))
+    legend(l.pos, mnames, lty = rep(1, times = length(models)), pch = rep(19, times = length(models)), col = rep(gc[1:length(models)], times = 2), adj = c(0, .6), cex = 2, text.col = 'black', text.width = strwidth(paste(mnames, collapse = ' ')))
 }
 %>
 
@@ -285,7 +286,7 @@ Where the adjusted R-squared equals to <%=summary(logLin)$adj.r.squared%> with a
 
 Both models on a quick plot themed by our [backend](http://daroczig.github.com/pander/):
 
-<%=ggplot(golddata2012) + geom_point(aes(x=Year, y=Result)) + geom_smooth(aes(x=Year, y=nonLin), alpha=0.2) + geom_smooth(aes(x=Year, y=logLin, col = "blue"), alpha=0.2, col = "red") + opts(title = data$Event[1]) + ylab("") + xlab("") + scale_y_continuous(labels = ms) + theme_bw() + opts(legend.position = "none")%>
+<%=ggplot(golddata2012) + geom_point(aes(x=Year, y=Result)) + geom_smooth(aes(x=Year, y=nonLin), alpha=0.2) + geom_smooth(aes(x=Year, y=logLin, col = "blue"), alpha=0.2, col = "red") + opts(title = d$Event[1]) + ylab("") + xlab("") + scale_y_continuous(labels = ms) + theme_bw() + opts(legend.position = "none")%>
 
 ### A complex plot
 
@@ -313,5 +314,3 @@ Not enought data to build a model.
     for (o in names(pO))
         panderOptions(o, pO[[o]])
 %>
-
-
