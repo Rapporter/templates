@@ -31,7 +31,8 @@ panderOptions('graph.background', 'transparent')
 #' @param sec integer
 #' @return character in \code{hours:minutes:seconds} format
 #' @author Rapporter Dev Team
-ms <- function(sec) {
+ms <- function(sec, D.time) {
+	if (D.time == 1) {
     sapply(sec, function(sec) {
         sec <- round(sec)
         minute <- sec %/% 60
@@ -42,9 +43,10 @@ ms <- function(sec) {
             paste(hours, minute, sec, sep=":")
         } else {
             sec <- sprintf("%02d", sec - minute * 60)
-            paste(minute, sec, sep=":")
-        }
-    })
+            paste(minute, sec, sep=":") }})
+	} else 
+		(sec)	
+	}
 }
 
 #' Revert pretty time printing
@@ -112,7 +114,7 @@ plotPredictions <- function(df, models) {
 
     ## draw y axis
     par(las = 1, family = ff)
-    axis(2, at = ylime, ms(ylime), cex = 2, family = ff, font=4)
+    axis(2, at = ylime, ms(ylime, in.time), cex = 2, family = ff, font=4)
     for (y in ylime)
         abline(h = y, lty = gt, col = gcc, lwd = 0.5)
 
@@ -127,7 +129,7 @@ plotPredictions <- function(df, models) {
         ## xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/5 * (2 - which(m == models)))
         yy <- 2012 - round((2012-min(Y)) / 25) * (2 - which(m == models))
         xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/7 * (which(m == models) - 1))
-        text(yy, xx, ms(trunc(tail(get(paste0(m, '.predict')), 1))), col = gc[which(m == models)], cex = 2)
+        text(yy, xx, ms(trunc(tail(get(paste0(m, '.predict')), 1)), in.time), col = gc[which(m == models)], cex = 2)
     }
 
     ## add a custom legend
@@ -163,7 +165,12 @@ plotPredictions <- function(df, models) {
     d$Event            <- as.character(d$Event)
     golddata$Year      <- as.numeric(as.character(golddata$Year))
     years              <- c(as.numeric(as.character(sort(unique(golddata$Year)))), 2012)
-    golddata$Result    <- rms(as.character(golddata$Result))
+    golddata$Result    <- as.character(golddata$Result)
+	in.time <- 1
+	if (grepl(tail(golddata$Result, 1), ':'))
+		golddata$Result    <- rms(as.character(golddata$Result))
+	else
+		in.time <- 0
     rownames(golddata) <- NULL
 
     ## weights
