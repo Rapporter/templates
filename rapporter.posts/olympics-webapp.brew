@@ -52,7 +52,8 @@ ms <- function(sec, D.time) {
 #' Revert pretty time printing
 #' @param sec character in \code{hours:minutes:seconds} format
 #' @return numeric
-rms <- function(text) {
+rms <- function(text, D.time) {
+	if (D.time == 1) {
     sapply(text, function(x) {
         x <- as.numeric(strsplit(x, ':')[[1]])
         if (length(x) == 1)
@@ -62,6 +63,8 @@ rms <- function(text) {
         if (length(x) == 3)
             return(x[1] * 60^2 + x[2] * 60 + x[3])
     }, USE.NAMES = FALSE)
+	} else
+	(text)
 }
 
 #' Plot predictions
@@ -168,7 +171,7 @@ plotPredictions <- function(df, models) {
     golddata$Result    <- as.character(golddata$Result)
 	in.time <- 1
 	if (grepl(tail(golddata$Result, 1), ':'))
-		golddata$Result    <- rms(as.character(golddata$Result))
+		golddata$Result    <- rms(as.character(golddata$Result), in.time)
 	else
 		in.time <- 0
     rownames(golddata) <- NULL
