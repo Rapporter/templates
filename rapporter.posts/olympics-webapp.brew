@@ -172,6 +172,12 @@ plotPredictions <- function(df, models) {
         d <- readRDS(datafile)
     }
 
+    ## removing events which seem to be invalid
+    ## dEvents         <- names(sort(table(d$Event), decreasing = TRUE))
+    ## dEvents.invalid <- which(!d$Event %in% c(dEvents[which(dEvents != '')[1]], ''))
+    ## if (length(dEvents.invalid) > 0)
+    ##     d <- d[-dEvents.invalid, ]
+
     ## just dealing with the winners ATM
     golddata <- subset(d, Medal %in% "GOLD")
 
