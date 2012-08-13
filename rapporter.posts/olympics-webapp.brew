@@ -47,7 +47,7 @@ ms <- function(sec, transform = TRUE) {
                 paste(minute, sec, sep=":")
             }
         } else
-            sec
+            round(sec, 2)
     })
 }
 
@@ -66,7 +66,7 @@ rms <- function(text, transform = TRUE) {
             if (length(x) == 3)
                 return(x[1] * 60^2 + x[2] * 60 + x[3])
         } else
-            as.numeric(x)
+            round(as.numeric(x), 2)
     }, USE.NAMES = FALSE)
 }
 
@@ -135,7 +135,7 @@ plotPredictions <- function(df, models) {
         ## xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/5 * (2 - which(m == models)))
         yy <- 2012 - round((2012-min(Y)) / 25) * (2 - which(m == models))
         xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/7 * (which(m == models) - 1))
-        text(yy, xx, ms(trunc(tail(get(paste0(m, '.predict')), 1)), resultInTime), col = gc[which(m == models)], cex = 2)
+        text(yy, xx, ms(tail(get(paste0(m, '.predict')), 1), resultInTime), col = gc[which(m == models)], cex = 2)
     }
 
     ## add a custom legend
