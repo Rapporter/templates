@@ -211,8 +211,6 @@ Both models on a complex plot:
     ## saving options as tweaking some internals
     eO <- evalsOptions()
     pO <- panderOptions()
-    evalsOptions('width', 1100)
-    evalsOptions('height', 1100)
     evalsOptions('graph.unify', FALSE)
 %><%=
     ## plotting
