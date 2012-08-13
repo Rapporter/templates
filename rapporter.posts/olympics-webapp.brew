@@ -176,7 +176,7 @@ plotPredictions <- function(df, models) {
     years              <- c(as.numeric(as.character(sort(unique(golddata$Year)))), 2012)
     golddata$Result    <- as.character(golddata$Result)
 	in.time <- 1
-	if (grepl(tail(':', golddata$Result, 1))) {
+	if (grepl(':', tail(golddata$Result, 1))) {
 		golddata$Result    <- rms(as.character(golddata$Result), in.time) 
 	} else
 		in.time <- 0
