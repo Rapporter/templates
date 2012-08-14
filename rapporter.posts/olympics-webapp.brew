@@ -252,6 +252,8 @@ par(mfrow = c(2, 2))
 
 Where the adjusted R-squared equals to <%=summary(nonLin)$adj.r.squared%> with a p-value of <%=round(anova(nonLin)$'Pr(>F)'[1], 5)%>.
 
+<%=anova(nonLin)%>
+
 ### Log-linear model
 
 Our log-linear model looks like:
@@ -291,6 +293,8 @@ par(mfrow = c(2, 2))
 %>
 
 Where the adjusted R-squared equals to <%=summary(logLin)$adj.r.squared%> with a p-value of <%=round(anova(logLin)$'Pr(>F)'[1], 5)%>.
+
+<%=anova(logLin)%>
 
 ### ggplot2
 
