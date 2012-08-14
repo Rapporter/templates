@@ -173,10 +173,10 @@ plotPredictions <- function(df, models) {
     }
 
     ## removing events which seem to be invalid
-    ## dEvents         <- names(sort(table(d$Event), decreasing = TRUE))
-    ## dEvents.invalid <- which(!d$Event %in% c(dEvents[which(dEvents != '')[1]], ''))
-    ## if (length(dEvents.invalid) > 0)
-    ##     d <- d[-dEvents.invalid, ]
+    dEvents         <- names(sort(table(d$Event), decreasing = TRUE))
+    dEvents.invalid <- which(d$Event != dEvents[which(dEvents != '')[1]])
+    if (length(dEvents.invalid) > 0)
+        d <- d[-dEvents.invalid, ]
 
     ## just dealing with the winners ATM
     golddata <- subset(d, Medal %in% "GOLD")
@@ -209,7 +209,7 @@ We have fetched some data from [databaseolympics.com](<%=url%>):
         golddata <- golddata[-which(duplicated(golddata['Year'])), ]
 %>
 
-<%if (nrow(golddata) > 6) { %>
+<%if (nrow(golddata) > 5) { %>
 
 ### Non-linear model
 
@@ -217,16 +217,13 @@ And fitted a non-linear model on the winning times:
 
 <%=
     ## fitting a non-linear model
-    golddata$year2 <- golddata$Year**2
-    golddata$year3 <- golddata$Year**3
-    golddata$year4 <- golddata$Year**4
     if (weights) {
-        nonLin     <- suppressWarnings(lm(Result ~ Year * year2 * year3 * year4, weights = ((Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year)), data = golddata))
+        nonLin     <- suppressWarnings(lm(Result ~ poly(Year, 4), weights = (Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year), data = golddata))
     } else {
-        nonLin     <- suppressWarnings(lm(Result ~ Year * year2 * year3 * year4, data = golddata))
+        nonLin     <- suppressWarnings(lm(Result ~ poly(Year, 4), data = golddata))
     }
     nonLin.name    <- 'power prediction'
-    nonLin.predict <- suppressWarnings(predict(nonLin, newdata = data.frame(Year = years, year2 = years^2, year3 = years^3, year4 = years^4)))
+    nonLin.predict <- suppressWarnings(predict(nonLin, newdata = data.frame(Year = years)))
     nonLin.width   <- (100 - ((1 - mean(summary(nonLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(nonLin)$adj.r.squared) * 100
     golddata2012   <- rbind(golddata, c(2012, rep(NA, times = ncol(golddata)-1)))
     golddata2012$nonLin <- nonLin.predict
@@ -237,7 +234,9 @@ And fitted a non-linear model on the winning times:
 
 #### Validations of the Model Assumptions
 
-TODO
+<%=
+pandoc.table.return(summary(gvlma(nonLin)), split.tables = Inf)
+%>
 
 #### Diagnostic plot
 
@@ -271,7 +270,7 @@ Our log-linear model looks like:
 #### Validations of the Model Assumptions
 
 <%=
-pandoc.table.return(summary(gvlma(logLin)), split.tables=Inf)
+pandoc.table.return(summary(gvlma(logLin)), split.tables = Inf)
 %>
 
 #### Diagnostic plot
