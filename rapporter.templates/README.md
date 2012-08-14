@@ -24,7 +24,7 @@ The method would be automatically chosen based on the level of measurement of th
 
 #### Factor-factor
 
-  * chi-squared homogeneity test (@daroczig)
+  * ~~chi-squared homogeneity test (@daroczig)~~
   * ~~crosstable (@daroczig)~~
 
 #### Factor-numeric
@@ -34,7 +34,7 @@ The method would be automatically chosen based on the level of measurement of th
 
 #### Numeric-numeric
 
-  * (linear) regression
+  * (linear) regression (@nagydaniel)
   * ~~correlation (@daroczig)~~
   * PCA
   * Kolmogorov-Smirnov test
