@@ -235,7 +235,12 @@ And fitted a non-linear model on the winning times:
 #### Validations of the Model Assumptions
 
 <%=
-pandoc.table.return(summary(gvlma(nonLin)), split.tables = Inf)
+a <- summary(gvlma(nonLin))
+ifelse(any(a$Decision == 'Assumptions NOT satisfied!'), 'It seems that some assumptions of the model was *not* satisfied:', 'The assumptions of the model were satisfied:')
+%>
+
+<%=
+pandoc.table.return(a, split.tables = Inf)
 %>
 
 #### Diagnostic plot
@@ -270,7 +275,12 @@ Our log-linear model looks like:
 #### Validations of the Model Assumptions
 
 <%=
-pandoc.table.return(summary(gvlma(logLin)), split.tables = Inf)
+a <- summary(gvlma(logLin))
+ifelse(any(a$Decision == 'Assumptions NOT satisfied!'), 'It seems that some assumptions of the model was *not* satisfied:', 'The assumptions of the model were satisfied:')
+%>
+
+<%=
+pandoc.table.return(a, split.tables = Inf)
 %>
 
 #### Diagnostic plot
