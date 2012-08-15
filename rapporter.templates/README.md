@@ -24,8 +24,8 @@ The method would be automatically chosen based on the level of measurement of th
 
 #### Factor-factor
 
-  * ~~chi-squared homogeneity test (@daroczig)~~
-  * ~~crosstable (@daroczig)~~
+  * ~~chi-squared homogeneity test (@daroczig)~~: to be verified
+  * ~~crosstable (@daroczig)~~: to be verified and needs annotations
 
 #### Factor-numeric
 
@@ -36,8 +36,8 @@ The method would be automatically chosen based on the level of measurement of th
 
   * (linear) regression (@nagydaniel)
   * ~~correlation (@daroczig)~~
-  * PCA
+  * PCA (@daroczig)
   * Kolmogorov-Smirnov test
-  * CA
+  * ~~CA (@daroczig)~~: to be verified
   * two sample t-test (@tothg & @aL3xa)
   * F test (@nagydaniel)
