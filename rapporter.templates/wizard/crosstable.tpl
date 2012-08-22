@@ -113,7 +113,7 @@ table.res
 
 <%=
 if (nrow(table.res.highlow) > 0) {
-    sprintf('Based on Pearson\'s resuals the following cells seems interesting (with values higher then `2` or lower then `-2`):\n%s', paste(sapply(1:nrow(table.res.highlow), function(i) sprintf('\n * "%s - %s"', rownames(table)[table.res.highlow[i, 1]], colnames(table)[table.res.highlow[i, 2]])), collapse = ''))
+    sprintf('Based on Pearson\'s residuals the following cells seems interesting (with values higher then `2` or lower then `-2`):\n%s', paste(sapply(1:nrow(table.res.highlow), function(i) sprintf('\n * "%s - %s"', rownames(table)[table.res.highlow[i, 1]], colnames(table)[table.res.highlow[i, 2]])), collapse = ''))
 } else {
     sprintf('No interesting (higher then `2` or lower then `-2`) values found based on Pearson\'s residuals.')
 }
