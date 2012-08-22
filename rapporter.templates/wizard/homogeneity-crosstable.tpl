@@ -34,7 +34,7 @@ fulltable
 
 # Chi-squared test
 
-Our [null hypothetis](http://en.wikipedia.org/wiki/Null_hypothesis) says that the proportion of *<=%rp.name(var)%>* is indentical in each categories of *<%=rp.name(split)%>*.
+Our [null hypothetis](http://en.wikipedia.org/wiki/Null_hypothesis) says that the proportion of *<%=rp.name(var)%>* is indentical in each categories of *<%=rp.name(split)%>*.
 
 <%=
 t <- suppressWarnings(chisq.test(table))
