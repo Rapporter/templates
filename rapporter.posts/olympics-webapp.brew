@@ -2,11 +2,6 @@
 % Predictions about Olympics
 % 2012
 
-## TODO
-
-  * when to drop a database based on few values (now set to `<10`)?
-  * when to apply `weights`? Now applied to all.
-
 <%=
 ## loading required packages
 suppressPackageStartupMessages(library(XML))
@@ -153,8 +148,6 @@ plotPredictions <- function(df, models) {
 }
 %>
 
-
-
 <%=
     ## datafile store
     dir.create(file.path(getwd(), 'reports', 'data'), recursive = TRUE, showWarnings = FALSE)
@@ -171,7 +164,19 @@ plotPredictions <- function(df, models) {
     } else {
         d <- readRDS(datafile)
     }
+%>
 
+## Welcome!
+
+You have selected **<%=d$Event[1]%>** in this demo without any additional parameters, so we try to guess what are you up to. Let us fit some statistical models on previous results in **<%=d$Event[1]%>** and try to predict the results in 2012 *if we assume* that the performance of the winners, so the forthcoming results also fit the historical data.
+
+### Historical data
+
+We have fetched some data from [databaseolympics.com](<%=url%>):
+
+<%=d%>
+
+<%=
     ## removing events which seem to be invalid
     dEvents         <- names(sort(table(d$Event), decreasing = TRUE))
     dEvents.invalid <- which(d$Event != dEvents[which(dEvents != '')[1]])
@@ -193,27 +198,25 @@ plotPredictions <- function(df, models) {
 
     ## weights
     weights <- TRUE
-%>
 
-## <%=d$Event[1]%>
-
-### Historical data
-
-We have fetched some data from [databaseolympics.com](<%=url%>):
-
-<%=golddata%>
-
-<%=
     ## removing duplicated rows (we just need the Results)
     if (!all(table(golddata['Year']) == 1))
         golddata <- golddata[-which(duplicated(golddata['Year'])), ]
 %>
 
+And applied some filters on the above dataset to let us concentrate on the (unique) winner's result:
+
+<%=golddata%>
+
+We do not even need all columns of this table, we will deal only with *Year* and the *Result* below which is eligible to build some simple statistical models to predict the expected results in 2012.
+
+Please note that the below estimates are not based on any causal model, nor we claim it could be accomplished. We just demonstrate: these numbers can be expected leaning solely on prior Olympic records.
+
 <%if (nrow(golddata) > 5) { %>
 
 ### Non-linear model
 
-And fitted a non-linear model on the winning times:
+Fitting a non-linear model on the winning times cannot be easier from a client's point of view with Rapporter:
 
 <%=
     ## fitting a non-linear model
@@ -234,10 +237,12 @@ And fitted a non-linear model on the winning times:
 
 #### Validations of the Model Assumptions
 
-<%=
+And checking the assumptions of the fitted model could be also useful: <%=
 a <- summary(gvlma(nonLin))
-ifelse(any(a$Decision == 'Assumptions NOT satisfied!'), 'It seems that some assumptions of the model was *not* satisfied:', 'The assumptions of the model were satisfied:')
+ifelse(any(a$Decision == 'Assumptions NOT satisfied!'), 'it seems that some assumptions of the model was *not* satisfied!', 'the assumptions of the model were satisfied.')
 %>
+
+In details:
 
 <%=
 pandoc.table.return(a, split.tables = Inf)
@@ -245,18 +250,20 @@ pandoc.table.return(a, split.tables = Inf)
 
 #### Diagnostic plot
 
+Professional users might find the diagnostic plots of R helpful too. Here you can find a default plot with Rapporter's automatically applied theme:
+
 <%=
 par(mfrow = c(2, 2))
 +plot(nonLin)
 %>
 
-Where the adjusted R-squared equals to <%=summary(nonLin)$adj.r.squared%> with a p-value of <%=round(anova(nonLin)$'Pr(>F)'[1], 5)%>.
+But back to the model: the adjusted R-squared equals to <%=summary(nonLin)$adj.r.squared%> with a p-value of <%=round(anova(nonLin)$'Pr(>F)'[1], 5)%>.
 
 <%=anova(nonLin)%>
 
 ### Log-linear model
 
-Our log-linear model looks like:
+And our log-linear model looks like:
 
 <%=
     ## fitting a log-linear model
@@ -276,9 +283,9 @@ Our log-linear model looks like:
 
 #### Validations of the Model Assumptions
 
-<%=
+Where <%=
 a <- summary(gvlma(logLin))
-ifelse(any(a$Decision == 'Assumptions NOT satisfied!'), 'It seems that some assumptions of the model was *not* satisfied:', 'The assumptions of the model were satisfied:')
+ifelse(any(a$Decision == 'Assumptions NOT satisfied!'), 'some assumptions were *not* satisfied:', 'the assumptions were satisfied:')
 %>
 
 <%=
@@ -286,6 +293,8 @@ pandoc.table.return(a, split.tables = Inf)
 %>
 
 #### Diagnostic plot
+
+And the diagnostic plots again:
 
 <%=
 par(mfrow = c(2, 2))
@@ -309,7 +318,7 @@ g
 
 ### A complex plot
 
-Both models on a complex plot:
+Both models on a complex plot build with `base` R (actually with `graphics` functions):
 
 <%=
     ## saving options as tweaking some internals
@@ -319,6 +328,8 @@ Both models on a complex plot:
     models <- c('nonLin', 'logLin')
     plotPredictions(golddata, models)
 %>
+
+We really hope that you liked this short demo, please do not forget to [sign up for our forthcoming next-generation web application](http://rapporter.net) to create your own report!
 
 <% } else { %>
 
