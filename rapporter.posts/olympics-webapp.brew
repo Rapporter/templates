@@ -210,7 +210,7 @@ We have fetched some data from [databaseolympics.com](<%=url%>):
         golddata <- golddata[-which(duplicated(golddata['Year'])), ]
 %>
 
-And applied some filters on the above dataset to let us concentrate on the (unique and with same conditions) winner's result:
+And applied some filters and data transformation on the above database to let us create an analyzable dataset:
 
 <%=golddata%>
 
