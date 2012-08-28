@@ -166,9 +166,15 @@ plotPredictions <- function(df, models) {
     }
 %>
 
+<%    
+	## defining events which seem to be invalid
+    dEvents         <- tail(as.character(d$Event[d$Event!='']),1)
+    dEvents.invalid <- which(d$Event != dEvents)
+%>
+	
 ## Welcome!
 
-You have selected **<%=d$Event[1]%>** in this demo without any additional parameters, so we try to guess what are you up to. Let us fit some statistical models on previous results in **<%=d$Event[1]%>** and try to predict the results in 2012 *if we assume* that the performance of the winners, so the forthcoming results also fit the historical data.
+You have selected **<%=dEvents %>** in this demo without any additional parameters, so we try to guess what are you up to. Let us fit some statistical models on previous results in **<%=dEvents %>** and try to predict the results in 2012 *if we assume* that the performance of the winners, so the forthcoming results also fit the historical data.
 
 ### Historical data
 
@@ -178,8 +184,8 @@ We have fetched some data from [databaseolympics.com](<%=url%>):
 
 <%=
     ## removing events which seem to be invalid
-    dEvents         <- names(sort(table(d$Event), decreasing = TRUE))
-    dEvents.invalid <- which(d$Event != dEvents[which(dEvents != '')[1]])
+    dEvents         <- tail(as.character(d$Event[d$Event!='']),1)
+    dEvents.invalid <- which(d$Event != dEvents)
     if (length(dEvents.invalid) > 0)
         d <- d[-dEvents.invalid, ]
 
@@ -204,21 +210,18 @@ We have fetched some data from [databaseolympics.com](<%=url%>):
         golddata <- golddata[-which(duplicated(golddata['Year'])), ]
 %>
 
-And applied some filters on the above dataset to let us concentrate on the (unique) winner's result:
+And applied some filters on the above dataset to let us concentrate on the (unique and with same conditions) winner's result:
 
 <%=golddata%>
+
+
+<%if (nrow(golddata) > 5) { %>
 
 We do not even need all columns of this table, we will deal only with *Year* and the *Result* below which is eligible to build some simple statistical models to predict the expected results in 2012.
 
 Please note that the below estimates are not based on any causal model, nor we claim it could be accomplished. We just demonstrate: these numbers can be expected leaning solely on prior Olympic records.
 
-<%if (nrow(golddata) > 5) { %>
-
-### Non-linear model
-
-Fitting a non-linear model on the winning times cannot be easier from a client's point of view with Rapporter:
-
-<%=
+<%
     ## fitting a non-linear model
     if (weights) {
         nonLin     <- suppressWarnings(lm(Result ~ poly(Year, 4), weights = (Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year), data = golddata))
@@ -230,7 +233,53 @@ Fitting a non-linear model on the winning times cannot be easier from a client's
     nonLin.width   <- (100 - ((1 - mean(summary(nonLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(nonLin)$adj.r.squared) * 100
     golddata2012   <- rbind(golddata, c(2012, rep(NA, times = ncol(golddata)-1)))
     golddata2012$nonLin <- nonLin.predict
+	names(nonLin$coefficients )[1:5] <- c('Intercept', 'Year', 'Year^2', 'Year^3', 'Year^4')
+	
+	## fitting a log-linear model
+    if (weights) {
+        logLin      <- lm(log(Result) ~ Year, weights = ((Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year)), data = golddata)
+    } else {
+        logLin      <- lm(log(Result) ~ Year, data = golddata)
+    }
+    logLin.name     <- 'simple prediction'
+    logLin.predict  <- exp(predict(logLin, newdata = data.frame(Year = years)))
+    logLin.width    <- (100 - ((1 - mean(summary(logLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(logLin)$adj.r.squared) * 100
+    golddata2012$logLin <- logLin.predict
+%>
 
+### Visualized models and predictions 
+
+#### We have built two different models: a log-linear (*simple*) and a non-linear (*power*) one. 
+
+Both models on a complex plot build with `base` R (actually with `graphics` functions):
+
+<%=
+    ## saving options as tweaking some internals
+    evalsOptions('graph.unify', FALSE)
+%><%=
+    ## plotting
+    models <- c('nonLin', 'logLin')
+    plotPredictions(golddata, models)
+%>
+
+### ggplot2
+
+Both models on a quick plot themed by our [backend](http://daroczig.github.com/pander/):
+
+<%=
+g <- ggplot(golddata2012) + geom_point(aes(x=Year, y=Result)) + geom_smooth(aes(x=Year, y=nonLin), alpha=0.2) + geom_smooth(aes(x=Year, y=logLin, col = "blue"), alpha=0.2, col = "red") + opts(title = d$Event[1]) + ylab("") + xlab("") + theme_bw() + opts(legend.position = "none")
+if (resultInTime)
+    g <- g + scale_y_continuous(labels = ms)
+g
+%>
+
+## The model fittings results in more detailed: 
+
+### Non-linear model
+
+Fitting a non-linear model on the winning times cannot be easier from a client's point of view with Rapporter:
+
+<%=
     ## printing
     nonLin
 %>
@@ -239,7 +288,7 @@ Fitting a non-linear model on the winning times cannot be easier from a client's
 
 And checking the assumptions of the fitted model could be also useful: <%=
 a <- summary(gvlma(nonLin))
-ifelse(any(a$Decision == 'Assumptions NOT satisfied!'), 'it seems that some assumptions of the model was *not* satisfied!', 'the assumptions of the model were satisfied.')
+ifelse(any(a$Decision == 'Assumptions NOT satisfied!'), 'it seems that some assumptions of the model was *not* satisfied!', 'all the assumptions of the model were satisfied!')
 %>
 
 In details:
@@ -248,7 +297,7 @@ In details:
 pandoc.table.return(a, split.tables = Inf)
 %>
 
-#### Diagnostic plot
+#### Diagnostic plots
 
 Professional users might find the diagnostic plots of R helpful too. Here you can find a default plot with Rapporter's automatically applied theme:
 
@@ -266,17 +315,6 @@ But back to the model: the adjusted R-squared equals to <%=summary(nonLin)$adj.r
 And our log-linear model looks like:
 
 <%=
-    ## fitting a log-linear model
-    if (weights) {
-        logLin      <- lm(log(Result) ~ Year, weights = ((Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year)), data = golddata)
-    } else {
-        logLin      <- lm(log(Result) ~ Year, data = golddata)
-    }
-    logLin.name     <- 'simple prediction'
-    logLin.predict  <- exp(predict(logLin, newdata = data.frame(Year = years)))
-    logLin.width    <- (100 - ((1 - mean(summary(logLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(logLin)$adj.r.squared) * 100
-    golddata2012$logLin <- logLin.predict
-
     ## printing
     logLin
 %>
@@ -292,7 +330,7 @@ ifelse(any(a$Decision == 'Assumptions NOT satisfied!'), 'some assumptions were *
 pandoc.table.return(a, split.tables = Inf)
 %>
 
-#### Diagnostic plot
+#### Diagnostic plots
 
 And the diagnostic plots again:
 
@@ -305,35 +343,11 @@ Where the adjusted R-squared equals to <%=summary(logLin)$adj.r.squared%> with a
 
 <%=anova(logLin)%>
 
-### ggplot2
-
-Both models on a quick plot themed by our [backend](http://daroczig.github.com/pander/):
-
-<%=
-g <- ggplot(golddata2012) + geom_point(aes(x=Year, y=Result)) + geom_smooth(aes(x=Year, y=nonLin), alpha=0.2) + geom_smooth(aes(x=Year, y=logLin, col = "blue"), alpha=0.2, col = "red") + opts(title = d$Event[1]) + ylab("") + xlab("") + theme_bw() + opts(legend.position = "none")
-if (resultInTime)
-    g <- g + scale_y_continuous(labels = ms)
-g
-%>
-
-### A complex plot
-
-Both models on a complex plot build with `base` R (actually with `graphics` functions):
-
-<%=
-    ## saving options as tweaking some internals
-    evalsOptions('graph.unify', FALSE)
-%><%=
-    ## plotting
-    models <- c('nonLin', 'logLin')
-    plotPredictions(golddata, models)
-%>
-
-We really hope that you liked this short demo, please do not forget to [sign up for our forthcoming next-generation web application](http://rapporter.net) to create your own report!
+#####We really hope that you liked this short demo, please do not forget to [sign up for our forthcoming next-generation web application](http://rapporter.net) to create your own report!
 
 <% } else { %>
 
-Not enought data to build a model.
+We are really sorry, but we cannot build a model from the results of <%=nrow(golddata)%> Olympic Games. Please try another sport event!
 
 <% } %>
 
