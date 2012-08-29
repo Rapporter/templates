@@ -18,7 +18,19 @@ Two variables specified:
  * "<%=rp.name(row)%>"<%=ifelse(rp.label(row)==rp.name(row), '', sprintf(' ("%s")', rp.label(row)))%> with <%=rp.valid(as.numeric(row))%> valid values and
  * "<%=rp.name(col)%>"<%=ifelse(rp.label(col)==rp.name(col), '', sprintf(' ("%s")', rp.label(col)))%> with <%=rp.valid(as.numeric(col))%> valid values.
 
-TODO: add intr about crosstable
+## Introduction
+
+[Crosstables](http://en.wikipedia.org/wiki/Cross_tabulation) are applicable to show the frequencies of categorical variables in a matrix form, with a table view.
+
+We will present four types of these crosstables. The first of them shows the *exact numbers of the observations*, ergo the number of the observations each of the variables' categories commonly have.
+
+The second also shows the possessions each of these cells have, but not the exact numbers of the observations, rather the *percentages* of them from the total data.
+
+The last two type of the crosstabs contain the so-called *row and column percentages* which demonstrate us the distribution of the frequencies if we concentrate only on one variable.
+
+After that we present the *tests* with which we can investigate the possible relationships, associations between the variables, like Chi-squared test, Fisher Exact Test, Goodman and Kruskal's lambda.
+
+In the last part there are some *charts* presented, with that one can visually observe the distribution of the frequencies.
 
 # Counts
 
@@ -69,7 +81,16 @@ In the below tests for [independece](http://en.wikipedia.org/wiki/Independence_(
 
 ## Chi-squared test
 
-TODO: add intro about chi^2
+One of the most widespread independence test is the [Chi-squared test](http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test). While using that we have the alternative hypothesis, the variables have an association between each other, in opposite of the null hypothesis that the two variables are independent.
+
+We use the cell frequencies from the crosstables to calculate the test statistic for that. The distribution of this test statistic follows a [Chi-square distribution](http://en.wikipedia.org/wiki/Chi-squared_distribution).
+
+The test was invented by Karl Pearson in 1900. It should be noted that the Chi-squared test has the disadvantage that it is sensitive to the sample size.
+
+### References
+
+  * Snedecor, George W. and Cochran, William G. (1989): _Statistical Methods_. Iowa State University Press.
+  * Karl Pearson (1900): _Philosophical Magazine_, Series 5 50 (302): 157-175.
 
 <%=
 table  <- table(row, col, deparse.level = 0) # no need for NAs from here
@@ -79,7 +100,9 @@ cramer <- sqrt(as.numeric(t$statistic) / (sum(table) * min(dim(table))))
 t
 %>
 
-TODO: write about the requirements of the test (expected < 1 & 5)
+To decide if the null or the alternative hypothesis could be accepted we need to calculate the number of degrees of freedom. The degrees of freedom is easy to calculate, we minus one from the number of the categories of both the row and the coloumn variables and multiply them with each other.
+
+To each degrees of freedom there is denoted a [critical value](http://en.wikipedia.org/wiki/Critical_value#Statistics). The result of the Chi-square test have to be lower than that value to be able to accept the nullhypothesis.
 
 <%if (inherits(tryCatch(chisq.test(table), warning = function(w) w), 'warning')) { %>
 The requirements of the chi-squared test was not met, so [Yates's correction for continuity](http://en.wikipedia.org/wiki/Yates%27s_correction_for_continuity) applied. The approximation may be incorrect.
@@ -121,7 +144,11 @@ if (nrow(table.res.highlow) > 0) {
 
 ## Fisher Exact Test
 
-TODO: add intro about Fisher's test
+An other test to check the possible association/independence between two variables, is the [Fisher exact test](http://en.wikipedia.org/wiki/Fisher's_exact_test). This test is especially useful with small samples, but could be used with bigger datasets as well.
+
+We have the advantage while using the Fisher's over the Chi-square test, that we could get an exact significance value not just a level of it, thus we can have an impression about the power of the test and the association.
+
+The test was invented by, thus named after R.A. Fisher.
 
 <%=
 f <- suppressWarnings(fisher.test(table, hybrid = TRUE, workspace = 1e6))
@@ -137,17 +164,22 @@ The variables seems to be independent based on Fisher's exact test at the [signi
 
 <% } %>
 
+### References
+
+  * Fisher, R. A. (1922): On the interpretation of chi-square from contingency tables, and the calculation of P. _Journal of the Royal Statistical Society_ 85 (1): 87-94.
+  * Fisher, R.A. (1954): _Statistical Methods for Research Workers_. Oliver and Boyd.
+
 <% if (t$p.value < 0.05 | f$p.value < 0.05) { %>
 
 # Direction of relationship
 
 ## Goodman and Kruskal's lambda
 
-TODO: add intro about lambda
+With the help of the [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal's_lambda) we can look for not only relationship on its own, which have directions if we set one variable as a predictor and the other as a criterion variable.
 
 <%if (diff(unlist(lambda, use.names = FALSE)) != 0 & !is.na(cramer)) { %>
 
-Based on [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal's_lambda) it seems that *<%=c(rp.name(col),rp.name(row))[which.max(lambda)]%>* ($\lambda$=<%=pander.return(max(as.numeric(lambda)))%>) has an effect on *<%=c(rp.name(col),rp.name(row))[which.min(lambda)]%>* ($\lambda$=<%=min(as.numeric(lambda))%>) if we assume both variables to be nominal.
+Based on Goodman and Kruskal's lambda it seems that *<%=c(rp.name(col),rp.name(row))[which.max(lambda)]%>* ($\lambda$=<%=pander.return(max(as.numeric(lambda)))%>) has an effect on *<%=c(rp.name(col),rp.name(row))[which.min(lambda)]%>* ($\lambda$=<%=min(as.numeric(lambda))%>) if we assume both variables to be nominal.
 
 <% } else { %>
 
@@ -159,7 +191,11 @@ Moreover: **it seems that the provided variables do not fit a real crosstable**.
 
 # Charts
 
-TODO: add intro about heatmap
+If one would like to investigate the relationships rather visually than in a crosstable form, there are several possibilities to do that.
+
+At first we can have a look at on the so-called [heat map](http://en.wikipedia.org/wiki/Heat_map). This kind of chart uses the same amount of cells and a similar form as the crosstable does, but instead of the numbers there are colours to show which cell contains the most counts (or likewise the highest total percentages).
+
+The darker colour is one cell painted, the most counts/the higher total percentage it has.
 
 <%=
 set.caption('Heatmap')
@@ -167,7 +203,9 @@ ggfluctuation(table, type = 'colour') + geom_tile() + xlab('') + ylab('') + labs
 %>
 
 
-TODO: add intro about mosaic charts
+In front of the heat map, on the *mosaic charts*, not only the colours are important. The size of the cells shows the amount of the counts one cell has.
+
+The width on the axis of <%=rp.name(row)%> determinate one side and the height on the axis of the <%=rp.name(col)%> gives the final shape of the box. The box which demonstrates a cell from the hypothetic crosstable. We can see on the top of the chart which category from the <%=rp.name(col)%> draw the boxes what kind of colour.
 
 <%=
 set.caption('Mosaic chart')
@@ -187,7 +225,10 @@ ggplot(t, aes(ymin = ymin, ymax = ymax, xmin = xmin, xmax = xmax, fill = Var.2))
 panderOptions('graph.legend.position', glp)
 %>
 
-TODO: add intro about fluctuation diagrams
+At last but not least have a glance on the *fluctuation diagram*. Unlike the above two charts, here the colours does not have influence on the chart, but the sizes of the boxes, which obviously demonstrates here as well the cells of the crosstable.
+
+The bigger one box the higher the number of the counts/the total percentages, which that box denotes.
+
 
 <%=
 set.caption('Fluctuation diagram')
