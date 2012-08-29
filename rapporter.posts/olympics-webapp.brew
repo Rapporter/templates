@@ -144,7 +144,7 @@ plotPredictions <- function(df, models) {
     ## add a custom legend
     l.pos <- ifelse(xx < mean(R), 'topright', 'bottomright')
     mnames <- unlist(mget(paste0(models, '.name'), envir = parent.frame()), use.names = FALSE)
-    legend(l.pos, mnames, lty = rep(1, times = length(models)), pch = rep(19, times = length(models)), col = rep(gc[1:length(models)], times = 2), adj = c(0, .6), cex = 2, text.col = 'black', text.width = strwidth(paste(mnames, collapse = ' ')))
+    legend(l.pos, mnames, lty = rep(1, times = length(models)), pch = rep(19, times = length(models)), col = rep(gc[1:length(models)], times = 2), adj = c(0, .6), cex = 2, text.col = 'black', text.width = strwidth(paste(mnames, collapse = ' ')) * 1.1)
 }
 %>
 
