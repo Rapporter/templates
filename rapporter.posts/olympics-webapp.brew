@@ -381,6 +381,8 @@ We are really sorry, but we cannot build a model from only *<%=nrow(golddata)%>*
 
 `Database not found.`
 
+Please try again later and report this issue at feedback@rapporter.net.
+
 <% } %>
 
 <%=
