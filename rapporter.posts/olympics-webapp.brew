@@ -3,6 +3,21 @@
 % 2012
 
 <%=
+## ---------------------------------------------------------------
+##
+## USAGE
+## =====
+##
+## Set `u` and `weight` parameter before running this `brew` file!
+##
+## Example
+## -------
+##
+##    u      <- "ATH-220"
+##    weight <- TRUE
+##
+## ---------------------------------------------------------------
+
 ## loading required packages
 suppressPackageStartupMessages(library(XML))
 suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
@@ -190,6 +205,10 @@ We have fetched some data from [databaseolympics.com](<%=url%>):
     ## just dealing with the winners ATM
     golddata <- subset(d, Medal %in% "GOLD")
 
+    ## removing duplicated rows (we just need the Results)
+    if (!all(table(golddata['Year']) == 1))
+        golddata <- golddata[-which(duplicated(golddata['Year'])), ]
+
     ## are we dealing with time results?
     resultInTime <- any(grepl(':', golddata$Result))
 
@@ -200,12 +219,8 @@ We have fetched some data from [databaseolympics.com](<%=url%>):
     golddata$Result    <- rms(as.character(golddata$Result), resultInTime)
     rownames(golddata) <- NULL
 
-    ## weights
-    weights <- TRUE
-
-    ## removing duplicated rows (we just need the Results)
-    if (!all(table(golddata['Year']) == 1))
-        golddata <- golddata[-which(duplicated(golddata['Year'])), ]
+    ## weights: set before the `brew` call
+    # weight <- TRUE
 %>
 
 And applied some filters and data transformation on the above database to let us create a data set ready for the below analysis:
@@ -221,7 +236,7 @@ Please note that the below estimates are not based on any causal model, nor we c
 
 <%=
     ## fitting a non-linear model
-    if (weights) {
+    if (weight) {
         nonLin     <- suppressWarnings(lm(Result ~ poly(Year, 4), weights = (Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year), data = golddata))
     } else {
         nonLin     <- suppressWarnings(lm(Result ~ poly(Year, 4), data = golddata))
@@ -234,7 +249,7 @@ Please note that the below estimates are not based on any causal model, nor we c
 	names(nonLin$coefficients )[1:5] <- c('Intercept', 'Year', 'Year^2', 'Year^3', 'Year^4')
 
 	## fitting a log-linear model
-    if (weights) {
+    if (weight) {
         logLin      <- lm(log(Result) ~ Year, weights = ((Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year)), data = golddata)
     } else {
         logLin      <- lm(log(Result) ~ Year, data = golddata)
@@ -247,7 +262,7 @@ Please note that the below estimates are not based on any causal model, nor we c
 
 ### Visualized models and predictions
 
-We have built two different models: a log-linear (*simple*) and a non-linear (*power*) one.
+We have built two different models: a log-linear (*simple*) and a non-linear (*power*) one. Weights were <%=ifelse(weight, '', 'not')%> applied.
 
 Both models on a complex plot build with `base` R (actually with `graphics` functions):
 
