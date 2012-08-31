@@ -187,6 +187,10 @@ plotPredictions <- function(df, models) {
     dEvents.invalid <- which(d$Event != dEvents)
 %>
 
+<%
+if (exists('d')) {
+%>
+
 ## Welcome!
 
 You have selected **<%=dEvents %>** in this demo without any additional parameters, so we try to guess what are you up to. Let us fit some statistical models on previous results in **<%=dEvents %>** and try to predict the results in 2012 *if we assume* that the performance of the winners, so the forthcoming results also fit the historical data.
@@ -228,7 +232,9 @@ And applied some filters and data transformation on the above database to let us
 <%=golddata%>
 
 
-<%if (nrow(golddata) > 5) { %>
+<%
+if (nrow(golddata) > 5) {
+%>
 
 We do not even need all columns of this table, we will deal only with *Year* and the *Result* below which is eligible to build some simple statistical models to predict the expected results in 2012.
 
@@ -366,6 +372,14 @@ We really hope that you like this short demo, please do not forget to [sign up f
 We are really sorry, but we cannot build a model from only *<%=nrow(golddata)%>* result<%=ifelse(nrow(golddata) > 1, 's', '')%> at the Olympics.
 
 **Please try another sport event!**
+
+<% } %>
+
+<% } else { %>
+
+### ERROR
+
+`Database not found.`
 
 <% } %>
 
