@@ -210,7 +210,7 @@ We have fetched some data from [databaseolympics.com](<%=url%>):
     golddata <- subset(d, Medal %in% "GOLD")
 
     ## removing duplicated rows (we just need the Results)
-    if (!all(table(golddata['Year']) == 1))
+    if (any(table(golddata['Year']) > 1))
         golddata <- golddata[-which(duplicated(golddata['Year'])), ]
 
     ## are we dealing with time results?
