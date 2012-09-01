@@ -127,7 +127,7 @@ plotPredictions <- function(df, models) {
     yperiod <- trunc(diff(ylime)/5)
     if (diff(ylime) < 5) {
         ylime   <- round(c(max(R), min(R)), 2)
-        yperiod	<- round(diff(ylime) / 5, 2)
+        yperiod <- round(diff(ylime) / 5, 2)
     }
     ylime   <- c(ylime[1], ylime[1] + 1:5 * yperiod)
 
@@ -149,8 +149,6 @@ plotPredictions <- function(df, models) {
         lines(Y2012, get(paste0(m, '.predict')), col = gc[which(m == models)])
         lines(Y2012, get(paste0(m, '.predict')), lwd = get(paste0(m, '.width')), col = paste0(gc[which(m == models)], '44'))
         points(2012, tail(get(paste0(m, '.predict')), 1), pch = 19, col = gc[which(m == models)], cex = 3.5)
-        ## yy <- 2012 - round((2012-min(Y)) / 20) * (which(m == models) - 1)
-        ## xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/5 * (2 - which(m == models)))
         yy <- 2012 - round((2012-min(Y)) / 25) * (2 - which(m == models))
         xx <- tail(get(paste0(m, '.predict')), 1) + (yperiod/7 * (which(m == models) - 1))
         text(yy, xx, ms(tail(get(paste0(m, '.predict')), 1), resultInTime), col = gc[which(m == models)], cex = 2)
@@ -182,7 +180,7 @@ plotPredictions <- function(df, models) {
 %>
 
 <%=
-	## defining events which seem to be invalid
+        ## defining events which seem to be invalid
     dEvents         <- tail(as.character(d$Event[d$Event != '']), 1)
     dEvents.invalid <- which(d$Event != dEvents)
 %>
@@ -222,18 +220,16 @@ We have fetched some data from [databaseolympics.com](<%=url%>):
     years              <- c(as.numeric(as.character(sort(unique(golddata$Year)))), 2012)
     golddata$Result    <- rms(as.character(golddata$Result), resultInTime)
     rownames(golddata) <- NULL
-
-    ## weights: set before the `brew` call
-    # weight <- TRUE
 %>
 
 And applied some filters and data transformation on the above database to let us create a data set ready for the below analysis:
 
-<%=if (weights) {
-		golddata$weight <- ((golddata$Year - min(golddata$Year) + 4) / sum(golddata$Year - min(golddata$Year) + 4) * length(golddata$Year)) } %>
-
-<%=golddata%>
-
+<%=
+if (weight) {
+    golddata$weight <- ((golddata$Year - min(golddata$Year) + 4) / sum(golddata$Year - min(golddata$Year) + 4) * length(golddata$Year))
+}
+golddata
+%>
 
 <%
 if (nrow(golddata) > 5) {
@@ -246,7 +242,7 @@ Please note that the below estimates are not based on any causal model, nor we c
 <%=
     ## fitting a non-linear model
     if (weight) {
-        nonLin     <- suppressWarnings(lm(Result ~ poly(Year, 4), weights = (Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year), data = golddata))
+        nonLin     <- suppressWarnings(lm(Result ~ poly(Year, 4), weights = weight, data = golddata))
     } else {
         nonLin     <- suppressWarnings(lm(Result ~ poly(Year, 4), data = golddata))
     }
@@ -257,9 +253,9 @@ Please note that the below estimates are not based on any causal model, nor we c
     golddata2012$nonLin <- nonLin.predict
 	names(nonLin$coefficients )[1:5] <- c('Intercept', 'Year', 'Year^2', 'Year^3', 'Year^4')
 
-	## fitting a log-linear model
+    ## fitting a log-linear model
     if (weight) {
-        logLin      <- lm(log(Result) ~ Year, weights = ((Year - min(Year) + 4) / sum(Year - min(Year) + 4) * length(Year)), data = golddata)
+        logLin      <- lm(log(Result) ~ Year, weights = weight, data = golddata)
     } else {
         logLin      <- lm(log(Result) ~ Year, data = golddata)
     }
@@ -284,7 +280,7 @@ Both models on a complex plot build with `base` R (actually with `graphics` func
     plotPredictions(golddata, models)
 %><%=
     ## reset graph unify option
-	evalsOptions('graph.unify', TRUE)
+    evalsOptions('graph.unify', TRUE)
 %>
 
 Another quick plot themed by our [back-end](http://daroczig.github.com/pander/) building on `ggplot2`:
@@ -366,7 +362,7 @@ Where the adjusted R-squared equals to <%=summary(logLin)$adj.r.squared%> with a
 
 <%=anova(logLin)%>
 
-####We really hope that you like this short demo, please do not forget to [sign up for our forthcoming next-generation web application](http://rapporter.net) to create your own report!
+#### We really hope that you like this short demo, please do not forget to [sign up for our forthcoming next-generation web application](http://rapporter.net) to create your own report!
 
 ## Bye!
 
