@@ -151,10 +151,18 @@ We have the advantage while using the Fisher's over the Chi-square test, that we
 The test was invented by, thus named after R.A. Fisher.
 
 <%=
-f <- suppressWarnings(fisher.test(table, hybrid = TRUE, workspace = 1e6))
+f <- tryCatch(suppressWarnings(fisher.test(table, hybrid = TRUE, workspace = 1e6)), error = function(e) e)
 %>
 
-<% if (f$p.value < 0.05) { %>
+<% if (inherits(f, 'error')) { %>
+
+The test could not finish within resource limits.
+
+<%
+    f <- list(p.value = t$p.value)
+} else {
+    if (f$p.value < 0.05) {
+%>
 
 The variables seems to be dependent based on Fisher's exact test at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(f$p.value)%>.
 
@@ -162,7 +170,7 @@ The variables seems to be dependent based on Fisher's exact test at the [signifi
 
 The variables seems to be independent based on Fisher's exact test at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(f$p.value)%>.
 
-<% } %>
+<% }} %>
 
 ### References
 
