@@ -225,9 +225,8 @@ We have fetched some data from [databaseolympics.com](<%=url%>):
 And applied some filters and data transformation on the above database to let us create a data set ready for the below analysis:
 
 <%=
-if (weight) {
-    golddata$weight <- ((golddata$Year - min(golddata$Year) + 4) / sum(golddata$Year - min(golddata$Year) + 4) * length(golddata$Year))
-}
+if (weight)
+    golddata$weight <- (golddata$Year - min(golddata$Year) + 4) / sum(golddata$Year - min(golddata$Year) + 4) * length(golddata$Year)
 golddata
 %>
 
