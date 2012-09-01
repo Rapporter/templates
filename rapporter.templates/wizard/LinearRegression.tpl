@@ -5,11 +5,11 @@ Email:          feedback@rapporter.net
 Description:    This template will run a linear regression
 Packages:       HH, car, nortest, gvlma
 Data required:  TRUE
-Example:        rapport('Linear Regression 08.15', data=ius2008, dep='edu', indep=c('age','email'), indep.inter=T)
-dep            | *variable 			| x Variable     	    | Dependent variable
-indep          | *variable[1,50]    | y Variable(s)	 	    | Independent variable(s)
-indep.inter	   | TRUE				| interaction		    | Interaction between the independent variables
-crPlots		   | TRUE				| crplot		    	| plot checking the linearity
+Example:        rapport('LinearRegression', data=ius2008, dep='edu', indep=c('age','email'), indep.inter=T)
+dep            | *variable       | x Variable    | Dependent variable
+indep          | *variable[1,50] | y Variable(s) | Independent variable(s)
+indep.inter    | TRUE            | interaction   | Interaction between the independent variables
+crPlots        | TRUE            | crplot        | Plot checking linearity
 head-->
 
 <%=
@@ -18,12 +18,12 @@ indep.int <- fml(dep.name, indep.name, join.right = "*")
 indep.nonint <- fml(dep.name, indep.name, join.right = "+")
 fit <- lm(ifelse(indep.inter, indep.int, indep.nonint), data = d)
 indep.plu <- switch(indep.ilen, '', 's')
-gvmodel <- gvlma(fit) 
+gvmodel <- gvlma(fit)
 %>
 
 # Introduction
 
-With the help of the [linear regression](http://en.wikipedia.org/wiki/Linear_regression) we can investigate the relationship <%=ifelse(indep.ilen==1,'between two variables','between the variables')%>. More punctually we can observe if one of the variables, the so-called [dependent](http://en.wikipedia.org/wiki/Dependent_variable) variable, significantly depended on the other variable<%=indep.plu%>, if an increase/decrease on the dependent variable's values made an increase/decrease on the independent variable<%=indep.plu%>. 
+With the help of the [linear regression](http://en.wikipedia.org/wiki/Linear_regression) we can investigate the relationship <%=ifelse(indep.ilen==1,'between two variables','between the variables')%>. More punctually we can observe if one of the variables, the so-called [dependent](http://en.wikipedia.org/wiki/Dependent_variable) variable, significantly depended on the other variable<%=indep.plu%>, if an increase/decrease on the dependent variable's values made an increase/decrease on the independent variable<%=indep.plu%>.
 In this case we only observe linear relationships. <%=ifelse(indep.ilen==1,'','As we use in the model more than 1 independent variables, we call the method [multivariate regression](http://en.wikipedia.org/wiki/Multivariate_regression_model).')%>
 
 #Overview
@@ -39,15 +39,15 @@ In order to have reliable results, we have to check if the assumptions of the li
 (summary(gvmodel))
 decision<-(gvmodel$Decision)
 decision<- summary(gvmodel)[,3]
-decision1 <- (decision[1] == 'Assumptions NOT satisfied!') 
-decision2 <- (decision[2] == 'Assumptions NOT satisfied!') 
-decision3 <- (decision[3] == 'Assumptions NOT satisfied!') 
-decision4 <- (decision[4] == 'Assumptions NOT satisfied!') 
-decision5 <- (decision[5] == 'Assumptions NOT satisfied!') 
+decision1 <- (decision[1] == 'Assumptions NOT satisfied!')
+decision2 <- (decision[2] == 'Assumptions NOT satisfied!')
+decision3 <- (decision[3] == 'Assumptions NOT satisfied!')
+decision4 <- (decision[4] == 'Assumptions NOT satisfied!')
+decision5 <- (decision[5] == 'Assumptions NOT satisfied!')
 decision.any <- (any(decision == 'Assumptions NOT satisfied!'))
 %>
 
-To check these assumptions the so-called GVLMA, the Global Validation of Linear Model Assumptions will help us. The result of that we can see in the table above. 
+To check these assumptions the so-called GVLMA, the Global Validation of Linear Model Assumptions will help us. The result of that we can see in the table above.
 
 The GVLMA makes a thorough detection on the linear model, including tests generally about the fit, the shape of the distribution of the residuals ([skewness](http://en.wikipedia.org/wiki/Skewness) and [kurtosis](http://en.wikipedia.org/wiki/Kurtosis)), the linearity and the [homoskedasticity](http://en.wikipedia.org/wiki/Homoscedasticity). On the table we can see if our model met with the assumptions.
 As a generally accepted thumb-rule we use the critical [p-value](http://en.wikipedia.org/wiki/P-value)=0.05.
@@ -65,6 +65,10 @@ So let's see the results, which the test gave us:
  - At last but not least GVLMA confirms<%= ifelse(decision5, " the violation of", "") %> homoscedasticity.
 
 In summary: We can<%=ifelse(decision.any," 't","")%> be sure that the linear model used here fits to the data.
+
+References:
+
+  * Pena, EA and Slate, EH (2006): Global validation of linear model assumptions. _J. Amer. Statist. Assoc._ **101** (473):341-354.
 
 ### Nonlinearity
 
@@ -93,5 +97,6 @@ After successfully checked the assumptions we can finally turn to the main part 
 From the table we can read the variables <%=ifelse(indep.inter,'and interactions ','')%>which have significant effect on the dependent variable.
 
 <%=
+set.caption(sprintf('Fitting linear model: %s based on %s', dep.name, p(indep.name)))
 fit
 %>
