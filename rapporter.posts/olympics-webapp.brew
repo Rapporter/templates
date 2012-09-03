@@ -1,12 +1,20 @@
-% Anonymous user
+% Rapporter Development Team
 % Predictions about Olympics
 % 2012
 
 <%=
 ## ---------------------------------------------------------------
 ##
-## USAGE
-## =====
+## INTRODUCTION
+## ============
+##
+## This brew file is a POC demo of integrating `pander` in web
+## applications. Online demo available at:
+##
+##     http://demo.rapporter.net
+##
+## MANUAL USAGE
+## ============
 ##
 ## Set `u` and `weight` parameter before running this `brew` file!
 ##
@@ -41,7 +49,6 @@ panderOptions('graph.background', 'transparent')
 #' @param sec integer
 #' @param transform if set to FALSE the input will be returned without any tweaks
 #' @return character in \code{hours:minutes:seconds} format
-#' @author Rapporter Dev Team
 ms <- function(sec, transform = TRUE) {
     sapply(sec, function(sec) {
         if (transform) {
@@ -70,7 +77,7 @@ ms <- function(sec, transform = TRUE) {
 }
 
 #' Revert pretty time printing
-#' @param sec character in \code{hours:minutes:seconds} format
+#' @param text character in \code{hours:minutes:seconds} format
 #' @param transform if set to FALSE the input will be returned without any tweaks
 #' @return numeric
 rms <- function(text, transform = TRUE) {
@@ -180,7 +187,7 @@ plotPredictions <- function(df, models) {
 %>
 
 <%=
-        ## defining events which seem to be invalid
+    ## defining events which seem to be invalid
     dEvents         <- tail(as.character(d$Event[d$Event != '']), 1)
     dEvents.invalid <- which(d$Event != dEvents)
 %>
@@ -250,7 +257,7 @@ Please note that the below estimates are not based on any causal model, nor we c
     nonLin.width   <- (100 - ((1 - mean(summary(nonLin)$coefficients[, "Pr(>|t|)"]))^2 * 100)) + (1 - summary(nonLin)$adj.r.squared) * 100
     golddata2012   <- rbind(golddata, c(2012, rep(NA, times = ncol(golddata)-1)))
     golddata2012$nonLin <- nonLin.predict
-	names(nonLin$coefficients )[1:5] <- c('Intercept', 'Year', 'Year^2', 'Year^3', 'Year^4')
+    names(nonLin$coefficients )[1:5] <- c('Intercept', 'Year', 'Year^2', 'Year^3', 'Year^4')
 
     ## fitting a log-linear model
     if (weight) {
