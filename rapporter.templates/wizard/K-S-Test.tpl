@@ -30,12 +30,14 @@ hist(yvar)
 Now we will test if the <%=xvar.label%> and the <%=yvar.label%> had statistically the same distribution.
 
 <%=
-set.caption(sprintf('Two-sample Kolmogorov-Smirnov test on %s and %s', xvar.name, yvar.name))
+set.caption(sprintf('Two-sample Kolmogorov-Smirnov test on %s and %s', xvar.label, yvar.label))
 kstest <- suppressWarnings(ks.test(xvar,yvar))
 kstest
 ksp <- kstest$'p.value'
 p <- 0.05
 %>
 
-Here the stars represent the [significance levels](http://en.wikipedia.org/wiki/Statistical_significance) of the Kolmogorov-Smirnov test coefficients: one star for `0.05`, two for `0.01` and three  for `0.001`. In the absence of any stars we can conclude that the two variables follow the same distribution.
-<%=ifelse(ksp>p,'So the nullhypothesis, that the variables follow the same distribution was not rejected','So the variables do not follow the same distribution, according to the Kolmogorov-Smirnov test statistic.')%>
+<%if (inherits(tryCatch(ks.test(xvar,yvar), warning = function(w) w), 'warning')) { %>
+The requirements of the Kolmogorov-Smirnov Test test was not met, the approximation may be incorrect.
+<% } %>
+<%=ifelse(ksp>p,'So the nullhypothesis, that the variables follow the same distribution was not rejected. Here the stars represent the [significance levels](http://en.wikipedia.org/wiki/Statistical_significance) of the Kolmogorov-Smirnov test coefficients: one star for `0.05`, two for `0.01` and three  for `0.001`.','So the variables do not follow the same distribution, according to the Kolmogorov-Smirnov test statistic.')%>
