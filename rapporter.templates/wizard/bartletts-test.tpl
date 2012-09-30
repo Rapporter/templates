@@ -38,7 +38,9 @@ h
 
 So, the conclusions we can draw with the help of test statistics:
 
+<% if (length(xvar) <= 5000) { %>
  - according to _Shapiro-Wilk test_, the distribution of _<%= xvar.label %>_ is<%= ifelse(h[1, 3] < p, " not", "") %> normal.
+<% } %>
  - based on _Lilliefors test_, distribution of _<%= xvar.label %>_ is <%= ifelse(h[2, 3]<p, "not normal", "normal") %>
  - _Anderson-Darling test_ confirms<%= ifelse(h[3, 3] < p, " violation of", "") %> normality assumption
  - _Pearson's Chi-square test_ classifies the underlying distribution as <%= ifelse(h[4, 3]<p, "non-normal", "normal") %>
