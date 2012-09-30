@@ -6,8 +6,8 @@ Description:    This template will run a linear regression
 Packages:       HH, car, nortest, gvlma
 Data required:  TRUE
 Example:        rapport('LinearRegression', data=ius2008, dep='edu', indep=c('age','email'), indep.inter=T)
-dep            | *variable       | x Variable    | Dependent variable
-indep          | *variable[1,50] | y Variable(s) | Independent variable(s)
+dep            | *numeric        | x Variable    | Dependent variable
+indep          | *numeric[1,50]  | y Variable(s) | Independent variable(s)
 indep.inter    | TRUE            | interaction   | Interaction between the independent variables
 crPlots        | TRUE            | crplot        | Plot checking linearity
 head-->
