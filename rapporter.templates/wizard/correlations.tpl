@@ -13,7 +13,7 @@ head-->
 
 # Introduction
 
-[Correlation](correlation) is one of the most commonly used statistical tool. With the help of that we can get information about a possible [linear relation](http://en.wikipedia.org/wiki/Linear_independence) between two variables. According to the definition of the correlation, one can call it also as the standardized [covariance](http://en.wikipedia.org/wiki/Covariance).
+[Correlation](http://en.wikipedia.org/wiki/Correlation_and_dependence) is one of the most commonly used statistical tool. With the help of that we can get information about a possible [linear relation](http://en.wikipedia.org/wiki/Linear_independence) between two variables. According to the definition of the correlation, one can call it also as the standardized [covariance](http://en.wikipedia.org/wiki/Covariance).
 
 The maximum possible value of the correlation (the so-called [correlation coefficient](http://en.wikipedia.org/wiki/Correlation_coefficient)) could be 1, the minimum could be -1. In the first case there is a perfect positive (thus in the second case there is a perfect negative) linear relationship between the two variables, though perfect relationships, especially in the social sciences, are quite rare. If two variables are independent from each other, the correlation between them is 0, but 0 correlation coefficient only means certainly a [linear independency](http://en.wikipedia.org/wiki/Correlation_and_dependence#Correlation_and_linearity).
 

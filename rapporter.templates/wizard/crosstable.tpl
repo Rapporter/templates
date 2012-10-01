@@ -111,7 +111,7 @@ The requirements of the chi-squared test was not met, so [Yates's correction for
 <%if (!is.na(cramer)) {%>
 <%if (t$p.value < 0.05) { %>
 
-It seems that a real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the [degree of freedom](http://en.wikipedia.org/wiki/Degrees_of_freedom_(statistics)) being <%=as.numeric(t$parameter)%>^[Computed as: $df = (c - 1)(r-1)$ where $r$ refers to the number of rows and $c$ to the number of columns.]) at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(t$p.value)%>.
+It seems that a real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the [degree of freedom](http://en.wikipedia.org/wiki/Degrees_of_freedom_(statistics)) being <%=as.numeric(t$parameter)%>^[Computed as: $df = (c - 1)(r-1)$ where $r$ refers to the number of rows and $c$ to the number of columns.]) at the [significance level](http://en.wikipedia.org/wiki/Statistical_significance) of <%=add.significance.stars(t$p.value)%>.
 
 The association between the two variables seems to be <%=ifelse(cramer < 0.2, "weak", "strong")%> based on [Cramer's V](http://en.wikipedia.org/wiki/Cram%C3%A9r's_V) (<%=cramer%>).
 

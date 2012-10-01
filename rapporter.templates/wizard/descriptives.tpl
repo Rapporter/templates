@@ -29,7 +29,7 @@ The highest value found in the dataset is <%=rp.max(var)%>, which is exactly <%=
 
 ## Chart
 
-A [histogram](http://en.wikipedia.org/wiki/Histogram) visually shows the [distribution](http://en.wikipedia.org/wiki/Probability_distribution) of the dataset based on artificially allocated [frequencies](http://en.wikipedia.org/wiki/Statistical_frequency). Each bar represents a theretical interval of the data, where the height shows the count or density.
+A [histogram](http://en.wikipedia.org/wiki/Histogram) visually shows the [distribution](http://en.wikipedia.org/wiki/Probability_distribution) of the dataset based on artificially allocated [frequencies](http://en.wikipedia.org/wiki/Statistical_frequency). Each bar represents a theoretical interval of the data, where the height shows the count or density.
 
 <%=
 set.caption(sprintf('Histogram: %s', rp.label(var)))
