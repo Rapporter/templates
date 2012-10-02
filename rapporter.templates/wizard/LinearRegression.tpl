@@ -5,7 +5,7 @@ Email:          feedback@rapporter.net
 Description:    This template will run a linear regression
 Packages:       HH, car, nortest, gvlma
 Data required:  TRUE
-Example:        rapport('LinearRegression', data=mtcars, dep='hp', indep=c('wt','gear', 'qsec'), indep.inter=T)
+Example:        rapport('LinearRegression', data=mtcars, dep='hp', indep=c('wt','gear', 'qsec'), indep.inter=TRUE)
 dep            | *numeric        | x Variable    | Dependent variable
 indep          | *numeric[1,50]  | y Variable(s) | Independent variable(s)
 indep.inter    | TRUE            | interaction   | Interaction between the independent variables

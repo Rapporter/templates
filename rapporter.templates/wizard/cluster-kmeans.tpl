@@ -6,7 +6,6 @@ Description:    K-means clustering with automatically estimated number of cluste
 Packages:       cluster, fpc
 Data required:  TRUE
 Example:        rapport('cluster-kmeans', data=ius2008, vars=c('age', 'edu', 'leisure'))
-		rapport('cluster-kmeans', data=mtcars, vars=names(mtcars))
 vars            | *numeric[1,50] | Input variables | Any number of numeric variable
 head-->
 
@@ -37,7 +36,7 @@ plot(1:15, wss, type="b", xlab="Number of Clusters",  ylab="Within groups sum of
 cn <- pamk(varsScaled)
 %>
 
-We can figure out that, as we see how much the Within groups sum of squares decreases if we set a higher number of the groups. So the smaller the difference the smaller the gain we can do with increasing the number of the clusters (thus in this case the larger decreasing means the bigger gain). 
+We can figure out that, as we see how much the Within groups sum of squares decreases if we set a higher number of the groups. So the smaller the difference the smaller the gain we can do with increasing the number of the clusters (thus in this case the larger decreasing means the bigger gain).
 The ideal number of clusters seems to be <%=cn$nc%>.
 
 ## Cluster means
