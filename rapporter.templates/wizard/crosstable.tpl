@@ -3,7 +3,7 @@ Title:          Crosstable
 Author:         Rapporter Development Team
 Email:          feedback@rapporter.net
 Description:    Crosstable of two given variables with count, percentages and tests for indepence
-Packages:       descr, ggplot2
+Packages:       descr, ggplot2, reshape
 Data required:  TRUE
 Example:        rapport('crosstable', data=ius2008, row='gender', col='dwell')
 		rapport('crosstable', data=ius2008, row='email', col='dwell')
