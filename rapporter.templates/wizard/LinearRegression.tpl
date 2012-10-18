@@ -29,7 +29,7 @@ In this case we only observe linear relationships. <%=ifelse(indep.ilen==1,'','A
 #Overview
 
 <%= ifelse(indep.ilen==1, '', 'Multivariate-') %>Linear Regression was carried out, with <%= p(indep.label) %> as independent variable<%= indep.plu %>, and <%= p(dep.label) %> as a dependent variable.
-The [interaction](http://en.wikipedia.org/wiki/Interaction) between the independent variables was <%=ifelse(indep.inter, "", "n't")%> taken into account.
+The [interaction](http://en.wikipedia.org/wiki/Interaction) between the independent variables was<%=ifelse(indep.inter, "", "n't")%> taken into account.
 
 # Assumptions
 

@@ -39,7 +39,7 @@ h
 So, the conclusions we can draw with the help of test statistics:
 
 <% if (length(xvar) <= 5000 & !is.na(h[4, 3])) { %>
- - according to _Shapiro-Wilk test_, the distribution of _<%= xvar.label %>_ is<%= ifelse(h[4, 3] < p, " not", "") %> normal.
+ - according to _Shapiro-Wilk test_, the distribution of _<%= xvar.label %>_ is<%= ifelse(h[4, 3] < p, " not", "") %> normal
 <% }
 if (!is.na(h[1, 3])) { %>
  - based on _Lilliefors test_, distribution of _<%= xvar.label %>_ is <%= ifelse(h[1, 3]<p, "not normal", "normal") %>

@@ -16,7 +16,7 @@ The Brown–Forsyth test is used for checking the equality of the variances amon
 
 The base of the test is really similar to the Levene's test, but the Brown-Forsyth test uses the deviations from the group medians instead of the mean (what the Levene's does), thus the Brown-Forsyth test is called more robust.
 
-This test has the advantage over the other tests, which are also being used to check the homogeneity (F-test and Bartlett-test), that it does not have a normality assumption, so the variable we investigate do not have to follow a normal distribution.
+This test has the advantage over the other tests, which are also being used to check the homogeneity (F-test and Bartlett's test), that it does not have a normality assumption, so the variable we investigate do not have to follow a normal distribution.
 
 ## References
 
