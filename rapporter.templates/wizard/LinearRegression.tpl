@@ -18,7 +18,7 @@ indep.int <- fml(dep.name, indep.name, join.right = "*")
 indep.nonint <- fml(dep.name, indep.name, join.right = "+")
 fit <- lm(ifelse(indep.inter, indep.int, indep.nonint), data = d)
 indep.plu <- switch(indep.ilen, '', 's')
-gvmodel <- gvlma(fit)
+gvmodel <- tryCatch(gvlma(fit), error = function(e) e)
 %>
 
 # Introduction
@@ -33,12 +33,13 @@ The [interaction](http://en.wikipedia.org/wiki/Interaction) between the independ
 
 # Assumptions
 
+<% if (!inherits(gvmodel, 'error')) { %>
 In order to have reliable results, we have to check if the assumptions of the linear regression met with the data we used.
 
 <%=
 (summary(gvmodel))
-decision<-(gvmodel$Decision)
-decision<- summary(gvmodel)[,3]
+decision <- (gvmodel$Decision)
+decision <- summary(gvmodel)[,3]
 decision1 <- (decision[1] == 'Assumptions NOT satisfied!')
 decision2 <- (decision[2] == 'Assumptions NOT satisfied!')
 decision3 <- (decision[3] == 'Assumptions NOT satisfied!')
@@ -69,6 +70,12 @@ In summary: We can<%=ifelse(decision.any," 't","")%> be sure that the linear mod
 References:
 
   * Pena, EA and Slate, EH (2006): Global validation of linear model assumptions. _J. Amer. Statist. Assoc._ **101** (473):341-354.
+
+<% } else { %>
+
+We could not test the assumptions as the following R error occured: <%=gvmodel$message%>
+
+<% } %>
 
 ### Nonlinearity
 
