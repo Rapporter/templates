@@ -61,6 +61,8 @@ set.alignment(rep('centre', ncol(vars)), 'right')
 res
 %>
 
+The size of the above clusters are: <%=fit$size%>.
+
 ## Results
 
 On the chart below we can see the produced groups. To distinct which observation is related to which cluster each of the objects from the same groups have the same figure and there is a circle which shows the border of the clusters.
