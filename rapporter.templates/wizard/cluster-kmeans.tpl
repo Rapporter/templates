@@ -33,33 +33,31 @@ for (i in 2:15) {
     wss[i] <- sum(kmeans(varsScaled, centers = i)$withinss)
 }
 plot(1:15, wss, type="b", xlab="Number of Clusters",  ylab="Within groups sum of squares")
-cn <- pamk(varsScaled)
+cn <- tryCatch(pamk(varsScaled), error = function(e) e)
 %>
 
 We can figure out that, as we see how much the Within groups sum of squares decreases if we set a higher number of the groups. So the smaller the difference the smaller the gain we can do with increasing the number of the clusters (thus in this case the larger decreasing means the bigger gain).
+
+<% if (inherits(cn, 'error')) { %>
+<%=
+cn <- list(nc = sample(2:5, 1))
+stop(paste0('Unable to identify the ideal number of clusters, using a random number between 2 and 5: ', cn$nc))
+%>
+<% } else { %>
 The ideal number of clusters seems to be <%=cn$nc%>.
+<% } %>
 
 ## Cluster means
 
-The method of the K-means clustering starts with the step to set k number of centorids which could be the center of the groups we want to form. After that there comes several iterations, meanwhile the ideal centers are being calculated. These <%=cn$nc%> centroids seems to be:
+The method of the K-means clustering starts with the step to set k number of centorids which could be the center of the groups we want to form. After that there comes several iterations, meanwhile the ideal centers are being calculated.
 
-<%=
-res <- vars[row.names(cn$pamobject$medoids), ]
-res$Id <- row.names(res)
-row.names(res) <- NULL
-if (names(res)[1] != 'Id')
-    res <- res[, c(ncol(res), 1:(ncol(vars)))]
-set.alignment(c('right', rep('centre', ncol(vars))))
-res
-%>
-
-The centroids are the observations which are the nearest in average to all the other observations of their group. But it could be also interesting which are the typical values of the clusters! One way to figure out these typical values is to see the group means. The cluster averages are:
+The centroids are the observations which are the nearest in average to all the other observations of their group. But it could be also interesting which are the typical values of the clusters! One way to figure out these typical values is to see the group means. The <%=cn$nc%> cluster averages are:
 
 <%=
 fit <- kmeans(vars, cn$nc)
-res <- aggregate(vars, by = list(fit$cluster), FUN = mean)
-names(res)[1] <- 'Cluster'
-set.alignment(c('right', rep('centre', ncol(vars))))
+res <- fit$centers
+row.names(res) <- paste0(1:nrow(res), '.')
+set.alignment(rep('centre', ncol(vars)), 'right')
 res
 %>
 
