@@ -25,11 +25,11 @@ rp.desc(rp.name(var), NULL, c('mean', 'sd', 'var'), rp.data)
 
 The [standard deviation](http://en.wikipedia.org/wiki/Standard_deviation) equals to  <%=rp.sd(var)%> (variance: <%=rp.var(var)%>), which shows the unstandardized degree of [homogenity](http://en.wikipedia.org/wiki/Homogeneity_(statistics)): how much variation exists from the average. The [expected value](http://en.wikipedia.org/wiki/Mean) is around <%=rp.mean(var)%>, somewhere between <%=rp.mean(var)-1.96*rp.se.mean(var)%> and <%=rp.mean(var)+1.96*rp.se.mean(var)%> with the standard error of <%=rp.se.mean(var)%>.
 
-The highest value found in the dataset is <%=rp.max(var)%>, which is exactly <%=rp.max(var)/rp.min(var)%> times higher than the minimum (<%=rp.min(var)%>). The diffence between the two is described by the [range](http://en.wikipedia.org/wiki/Range_(statistics)): <%=diff(range(var, na.rm = TRUE))%>.
+The highest value found in the dataset is <%=rp.max(var)%>, which is exactly <%=rp.max(var)/rp.min(var)%> times higher than the minimum (<%=rp.min(var)%>). The difference between the two is described by the [range](http://en.wikipedia.org/wiki/Range_(statistics)): <%=diff(range(var, na.rm = TRUE))%>.
 
 ## Chart
 
-A [histogram](http://en.wikipedia.org/wiki/Histogram) visually shows the [distribution](http://en.wikipedia.org/wiki/Probability_distribution) of the dataset based on artificially allocated [frequencies](http://en.wikipedia.org/wiki/Statistical_frequency). Each bar represents a theretical interval of the data, where the height shows the count or density.
+A [histogram](http://en.wikipedia.org/wiki/Histogram) visually shows the [distribution](http://en.wikipedia.org/wiki/Probability_distribution) of the dataset based on artificially allocated [frequencies](http://en.wikipedia.org/wiki/Statistical_frequency). Each bar represents a theoretical interval of the data, where the height shows the count or density.
 
 <%=
 set.caption(sprintf('Histogram: %s', rp.label(var)))

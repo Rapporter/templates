@@ -24,20 +24,20 @@ The method would be automatically chosen based on the level of measurement of th
 
 #### Factor-factor
 
-  * ~~chi-squared homogeneity test (@daroczig)~~: to be verified
-  * ~~crosstable (@daroczig)~~: to be verified and needs annotations
+  * ~~chi-squared homogeneity test (@daroczig)~~
+  * ~~crosstable (@daroczig)~~
 
 #### Factor-numeric
 
   * ANOVA OR t-test/Welch (based on the number of categories) with automatic normality test (@tothg & @aL3xa)
-  * Levine OR Brown-Forsythe test (automatic test for the underlying distribution) (@tothg)
+  * ~~Levine OR Brown-Forsythe test (automatic test for the underlying distribution) (@nagydaniel)~~
 
 #### Numeric-numeric
 
-  * (linear) regression (@nagydaniel)
+  * ~~(linear) regression (@nagydaniel)~~
   * ~~correlation (@daroczig)~~
   * PCA (@daroczig)
-  * Kolmogorov-Smirnov test
+  * ~~Kolmogorov-Smirnov test (@nagydaniel)~~
   * ~~CA (@daroczig)~~: to be verified
   * two sample t-test (@tothg & @aL3xa)
-  * F test (@nagydaniel)
+  * ~~F test (@nagydaniel)~~

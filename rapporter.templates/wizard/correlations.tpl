@@ -13,7 +13,7 @@ head-->
 
 # Introduction
 
-[Correlation](correlation) is one of the most commonly used statistical tool. With the help of that we can get information about a possible [linear relation](http://en.wikipedia.org/wiki/Linear_independence) between two variables. According to the definition of the correlation, one can call it also as the standardized [covariance](http://en.wikipedia.org/wiki/Covariance).
+[Correlation](http://en.wikipedia.org/wiki/Correlation_and_dependence) is one of the most commonly used statistical tool. With the help of that we can get information about a possible [linear relation](http://en.wikipedia.org/wiki/Linear_independence) between two variables. According to the definition of the correlation, one can call it also as the standardized [covariance](http://en.wikipedia.org/wiki/Covariance).
 
 The maximum possible value of the correlation (the so-called [correlation coefficient](http://en.wikipedia.org/wiki/Correlation_coefficient)) could be 1, the minimum could be -1. In the first case there is a perfect positive (thus in the second case there is a perfect negative) linear relationship between the two variables, though perfect relationships, especially in the social sciences, are quite rare. If two variables are independent from each other, the correlation between them is 0, but 0 correlation coefficient only means certainly a [linear independency](http://en.wikipedia.org/wiki/Correlation_and_dependence#Correlation_and_linearity).
 
@@ -73,7 +73,7 @@ There are no uncorrelated correlated (r < -0.2 or r > 0.2) variables.
 
 <%=
 set.caption('Correlation matrix')
-cm <- round(cor(vars, use = 'complete.obs'), 4)
+cm <- format(round(cor(vars, use = 'complete.obs'), 4), decimal.mark = panderOptions('decimal.mark'))
 d <- attributes(cm)
 for (row in attr(cm, 'dimnames')[[1]])
     for (col in attr(cm, 'dimnames')[[2]]) {
@@ -103,7 +103,7 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
     ## forked from ?pairs
     par(usr = c(0, 1, 0, 1))
     r   <- cor(x, y, use = 'complete.obs')
-    txt <- format(c(r, 0.123456789), digits = digits)[1]
+    txt <- format(c(r, 0.123456789), digits = digits, decimal.mark = panderOptions('decimal.mark'))[1]
     txt <- paste(prefix, txt, sep = "")
     if(missing(cex.cor))
         cex <- 0.8/strwidth(txt)
