@@ -8,7 +8,7 @@ Example:        rapport('correlations', data=ius2008, vars=c('age', 'edu'))
 		rapport('correlations', data=ius2008, vars=c('age', 'edu', 'leisure'))
 		rapport('correlations', data=mtcars, vars=c('mpg', 'cyl', 'disp', 'hp', 'drat', 'wt', 'qsec', 'vs', 'am', 'gear', 'carb'))
 
-vars            | *numeric[2,50]| Variable                      | Numerical variables
+vars            | *numeric[2,50]| Variables   | Numerical variables
 head-->
 
 # Introduction
