@@ -7,18 +7,17 @@ Packages:       nortest
 Data required:  TRUE
 Example:        rapport('ftest', data=ius2008, xvar='edu', yvar='age')
 xvar          | *numeric | X Variable      | Numerical variable
-yvar          | *numeric | Y Variable      | Numerical variable
+yvar          | *numeric | Y Variable	   | Numerical variable
 head-->
 
 # Introduction
 
 F test compares the variances of two continuous variables. In other words it shows if their variances were statistically different.
-
 We should be careful, while using the F test, because of the strict normality assumption, where strict means approximately normal ditribution is not enough to satisfy that.
 
 # Normality assumption
 
-The Shapiro-Wilk test, the Lilliefors test, the Anderson-Darling test and the Pearson's Chi-square test help us to decide if the above-mentioned assumption existed.
+The [_Shapiro-Wilk test_](http://en.wikipedia.org/wiki/Shapiro%E2%80%93Wilk_test) (only below 5000 cases), the [_Lilliefors test_](http://en.wikipedia.org/wiki/Lilliefors_test), the [_Anderson-Darling test_](http://en.wikipedia.org/wiki/Anderson_Darling_test) and the [_Pearson's Chi-square test_](http://en.wikipedia.org/wiki/Pearson%27s_chi-square_test) help us to decide if the above-mentioned assumption existed.
 
 <%=
 if (length(xvar) > 5000) {
@@ -28,25 +27,30 @@ if (length(xvar) > 5000) {
 }
 p <- .05
 %>
-
-Normality test results for _<%=xvar.label%>_
-
+##Normality test results of the variable: _<%=xvar.label%>_
 <%=
 h
 %>
 
-So, let's draw some conclusions based on applied normality test:
+So, let's draw some conclusions based on applied normality tests:
 
-- according to _Shapiro-Wilk test_, the distribution of _<%= xvar.label %>_ is<%= ifelse(h[1, 3] < p, " not", "") %> normal.
-- As the test statistic of the _Lilliefors test_ shows us, we <%= ifelse(j[2, 3]<p, "have to reject", "can accept")%> the normality assumption of _<%= yvar.label %>_.
-- _Anderson-Darling test_ confirms<%= ifelse(h[3, 3] < p, " violation of", "") %> normality assumption
-- _Pearson's Chi-square test_ classifies the underlying distribution as <%= ifelse(h[4, 3]<p, "non-normal", "normal") %>
+<% if (length(xvar) <= 5000 & !is.na(h[4, 3])) { %>
+- According to _Shapiro-Wilk test_, the distribution of _<%= xvar.label %>_ is<%= ifelse(h[1, 3] < p, " not", "") %> normal.
+<% }
+if (!is.na(h[1, 3])) { %>
+- As the test statistic of the _Lilliefors test_ shows us, we <%= ifelse(h[2, 3]<p, "have to reject", "can accept")%> the normality assumption of _<%= xvar.label %>_.
+<% }
+if (!is.na(h[2, 3])) { %>
+- _Anderson-Darling test_ confirms<%= ifelse(h[3, 3] < p, " violation of", "") %> normality assumption.
+<% }
+if (!is.na(h[3, 3])) { %>
+- _Pearson's Chi-square test_ classifies the underlying distribution as <%= ifelse(h[4, 3]<p, "non-normal", "normal") %>.
 
-<%=k<-0
-if (h[1,3]<p){l<-k+1}
-if (h[2,3]<p){m<-l+1}
-if (h[3,3]<p){n<-m+1}
-if (h[4,3]<p){o<-n+1}
+<% }
+
+o <- sum((h[1,3]<p), (h[2,3]<p), (h[3,3]<p), na.rm = TRUE)
+if (length(xvar) > 5000)
+    o <- sum(o, (h[4,3]<p), na.rm = TRUE)
 %>
 
 In summary we can<%= ifelse(o < 1, "", " not") %> assume, that the distribution of _<%= xvar.label %>_ is statistically normal.
@@ -59,29 +63,34 @@ if (length(yvar) > 5000) {
 }
 %>
 
-Normality test results for _<%=yvar.label%>_
-
+##Normality test results of the variable: _<%=yvar.label%>_
 <%=
 j
 %>
+<% if (length(yvar) <= 5000 & !is.na(j[4, 3])) { %>
+- According to _Shapiro-Wilk test_, the distribution of _<%= yvar.label %>_ is<%= ifelse(j[1, 3] < p, " not", "") %> normal.
+<% }
+if (!is.na(j[1, 3])) { %>
+- As the test statistic of the _Lilliefors test_ shows us, we <%= ifelse(j[2, 3]<p, "have to reject", "can accept")%> the normality assumption of _<%= yvar.label %>_.
+<% }
+if (!is.na(j[2, 3])) { %>
+- _Anderson-Darling test_ confirms<%= ifelse(j[3, 3] < p, " violation of", "") %> normality assumption.
+<% }
+if (!is.na(j[3, 3])) { %>
+- _Pearson's Chi-square test_ classifies the underlying distribution as <%= ifelse(j[4, 3]<p, "non-normal", "normal") %>.
 
-- The _Shapiro-Wilk test_ shows that _<%= yvar.label %>_ is<%= ifelse(j[1, 3] < p, " not", "") %> normal.
-- Based on _Lilliefors test_, distribution of _<%= xvar.label %>_ is <%= ifelse(h[2, 3]<p, "not normal", "normal") %>
-- The _Anderson-Darling test_ presents us a<%= ifelse(j[3, 3] < p, " violation of", "") %> normality assumption.
-- The distribution of the _<%= yvar.label %>_ is <%= ifelse(j[4, 3]<p, "not normal", "normal") %>, based on the _Pearson's Chi-square test_
+<% }
 
-<%=q<-0
-if (j[1,3]<p){r<-q+1}
-if (j[2,3]<p){s<-r+1}
-if (j[3,3]<p){t<-s+1}
-if (j[4,3]<p){u<-t+1}
+u <- sum((j[1,3]<p), (j[2,3]<p), (j[3,3]<p), na.rm = TRUE)
+if (length(yvar) > 5000)
+    u <- sum(u, (j[4,3]<p), na.rm = TRUE)
 %>
 
-As a conclusion of the tests above we can<%= ifelse(u < 1, "", " not") %> assume, that the distribution of _<%= yvar.label %>_ is statistically normal.
+In summary we can<%= ifelse(u < 1, "", " not") %> assume, that the distribution of _<%= yvar.label %>_ is statistically normal.
 
-## Summary
+## Summary of the assumption testing
 
-Thus we should<%= ifelse(o+u < 1, "", " not") %> use the Bartlett's test<%= ifelse(o+u < 1, ".", ", we would rather check the equality of the variances across the groups with the Brown-Forsyth test.") %>
+We<%= ifelse(o+u < 1, " are able to", " should not") %> use the F test<%= ifelse(o+u < 1, ", because all the used variables seem to be normally distributed.", ", because we cannot be sure all the variables are normally distributed.") %>
 
 # The F-test
 
@@ -90,9 +99,9 @@ Whereas we have checked the normality assumptions, let's see the results of the 
 <%=
 ftest <- function(xvar) var.test(xvar,yvar)
 Ftest <- htest(xvar,ftest)
-f.p <- Ftest$"p-value"
+f.p <- Ftest$"p.value"
 p <- 0.05
 Ftest
 %>
 
-We can see from the table that there is<%=ifelse(f.p<p,""," not")%> a significant difference between the variance of _<%=xvar.label%>_ and _<%=yvar.label%>_.
+We can see from the table (in the p-value coloumn) that there is<%=ifelse(f.p<p,""," not")%> a significant difference between the variance of _<%=xvar.label%>_ and _<%=yvar.label%>_.
