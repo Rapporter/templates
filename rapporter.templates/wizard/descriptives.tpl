@@ -33,7 +33,7 @@ A [histogram](http://en.wikipedia.org/wiki/Histogram) visually shows the [distri
 
 <%=
 set.caption(sprintf('Histogram: %s', rp.label(var)))
-hist(var)
+hist(var, main=paste0('Histogram of: ', rp.label(var)), xlab="")
 %>
 
 If we *suppose* that *<%=rp.label(var)%>* is not near to the [normal distribution](http://en.wikipedia.org/wiki/Normal_distribution) (see for example [skewness](http://en.wikipedia.org/wiki/Skewness): <%=rp.skewness(var)%>, [kurtosis](http://en.wikipedia.org/wiki/Kurtosis): <%=rp.kurtosis(var)%>), checking the median (<%=rp.median(var)%>) might be a better option instead of the mean. The [interquartile range](http://en.wikipedia.org/wiki/Interquartile_range) (<%=rp.iqr(var)%>) measures the statistics dispersion of the variable (similar to standard deviation) based on median.
