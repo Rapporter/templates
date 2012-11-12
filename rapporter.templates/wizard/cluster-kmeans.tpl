@@ -40,7 +40,8 @@ We can figure out that, as we see how much the Within groups sum of squares decr
 
 <% if (inherits(cn, 'error')) { %>
 <%=
-cn <- list(nc = sample(2:5, 1))
+nc = sample(2:5, 1)
+cn <- list(pamobject = pam(varsScaled, nc), nc = nc)
 stop(paste0('Unable to identify the ideal number of clusters, using a random number between 2 and 5: ', cn$nc))
 %>
 <% } else { %>
@@ -57,7 +58,7 @@ The centroids are the observations which are the nearest in average to all the o
 fit <- kmeans(vars, cn$nc)
 res <- fit$centers
 row.names(res) <- paste0(1:nrow(res), '.')
-set.alignment(rep('centre', ncol(vars)), 'right')
+set.alignment(rep('centre', ncol(res)), 'right')
 res
 %>
 
@@ -68,6 +69,9 @@ The size of the above clusters are: <%=fit$size%>.
 On the chart below we can see the produced groups. To distinct which observation is related to which cluster each of the objects from the same groups have the same figure and there is a circle which shows the border of the clusters.
 
 <%=
-clusplot(vars, fit$cluster, color = TRUE, shade = TRUE, labels = ifelse(nrow(vars) < 100, 2, 4), lines = 1, main = '', col.p = 'black', col.clus = panderOptions('graph.colors'))
+if (ncol(res) > 1) {
+    clusplot(cn$pamobject, fit$cluster, color = TRUE, shade = TRUE, labels = ifelse(nrow(vars) < 100, 2, 4), lines = 1, main = '', col.p = 'black', col.clus = panderOptions('graph.colors'))
+} else {
+    warning('Only one variable provided, so there is no sense drawing a 2D plot here.')
+}
 %>
-
