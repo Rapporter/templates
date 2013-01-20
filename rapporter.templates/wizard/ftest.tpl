@@ -23,7 +23,7 @@ The [_Shapiro-Wilk test_](http://en.wikipedia.org/wiki/Shapiro%E2%80%93Wilk_test
 if (length(xvar) > 5000) {
     h <- htest(xvar, lillie.test, ad.test, pearson.test)
 } else {
-    h <- htest(xvar, shapiro.test, lillie.test, ad.test, pearson.test)
+    h <- htest(xvar, lillie.test, ad.test, pearson.test, shapiro.test)
 }
 p <- .05
 %>
@@ -35,16 +35,16 @@ h
 So, let's draw some conclusions based on applied normality tests:
 
 <% if (length(xvar) <= 5000 & !is.na(h[4, 3])) { %>
-- According to _Shapiro-Wilk test_, the distribution of _<%= xvar.label %>_ is<%= ifelse(h[1, 3] < p, " not", "") %> normal.
+- According to _Shapiro-Wilk test_, the distribution of _<%= xvar.label %>_ is<%= ifelse(h[4, 3] < p, " not", "") %> normal.
 <% }
 if (!is.na(h[1, 3])) { %>
-- As the test statistic of the _Lilliefors test_ shows us, we <%= ifelse(h[2, 3]<p, "have to reject", "can accept")%> the normality assumption of _<%= xvar.label %>_.
+- As the test statistic of the _Lilliefors test_ shows us, we <%= ifelse(h[1, 3]<p, "have to reject", "can accept")%> the normality assumption of _<%= xvar.label %>_.
 <% }
 if (!is.na(h[2, 3])) { %>
-- _Anderson-Darling test_ confirms<%= ifelse(h[3, 3] < p, " violation of", "") %> normality assumption.
+- _Anderson-Darling test_ confirms<%= ifelse(h[2, 3] < p, " violation of", "") %> normality assumption.
 <% }
 if (!is.na(h[3, 3])) { %>
-- _Pearson's Chi-square test_ classifies the underlying distribution as <%= ifelse(h[4, 3]<p, "non-normal", "normal") %>.
+- _Pearson's Chi-square test_ classifies the underlying distribution as <%= ifelse(h[3, 3]<p, "non-normal", "normal") %>.
 
 <% }
 
@@ -59,7 +59,7 @@ In summary we can<%= ifelse(o < 1, "", " not") %> assume, that the distribution 
 if (length(yvar) > 5000) {
     j <- htest(yvar, lillie.test, ad.test, pearson.test)
 } else {
-    j <- htest(yvar, shapiro.test, lillie.test, ad.test, pearson.test)
+    j <- htest(yvar, lillie.test, ad.test, pearson.test, shapiro.test)
 }
 %>
 
@@ -68,16 +68,16 @@ if (length(yvar) > 5000) {
 j
 %>
 <% if (length(yvar) <= 5000 & !is.na(j[4, 3])) { %>
-- According to _Shapiro-Wilk test_, the distribution of _<%= yvar.label %>_ is<%= ifelse(j[1, 3] < p, " not", "") %> normal.
+- According to _Shapiro-Wilk test_, the distribution of _<%= yvar.label %>_ is<%= ifelse(j[4, 3] < p, " not", "") %> normal.
 <% }
 if (!is.na(j[1, 3])) { %>
-- As the test statistic of the _Lilliefors test_ shows us, we <%= ifelse(j[2, 3]<p, "have to reject", "can accept")%> the normality assumption of _<%= yvar.label %>_.
+- As the test statistic of the _Lilliefors test_ shows us, we <%= ifelse(j[1, 3]<p, "have to reject", "can accept")%> the normality assumption of _<%= yvar.label %>_.
 <% }
 if (!is.na(j[2, 3])) { %>
 - _Anderson-Darling test_ confirms<%= ifelse(j[3, 3] < p, " violation of", "") %> normality assumption.
 <% }
 if (!is.na(j[3, 3])) { %>
-- _Pearson's Chi-square test_ classifies the underlying distribution as <%= ifelse(j[4, 3]<p, "non-normal", "normal") %>.
+- _Pearson's Chi-square test_ classifies the underlying distribution as <%= ifelse(j[3, 3]<p, "non-normal", "normal") %>.
 
 <% }
 
@@ -92,6 +92,8 @@ In summary we can<%= ifelse(u < 1, "", " not") %> assume, that the distribution 
 
 We<%= ifelse(o+u < 1, " are able to", " should not") %> use the F test<%= ifelse(o+u < 1, ", because all the used variables seem to be normally distributed.", ", because we cannot be sure all the variables are normally distributed.") %>
 
+<% if(o+u < 1){ %>
+
 # The F-test
 
 Whereas we have checked the normality assumptions, let's see the results of the _F test_ to compare the variances of <%= p(xvar.label) %> and <%=p(yvar.label)%>.
@@ -105,3 +107,8 @@ Ftest
 %>
 
 We can see from the table (in the p-value coloumn) that there is<%=ifelse(f.p<p,""," not")%> a significant difference between the variance of _<%=xvar.label%>_ and _<%=yvar.label%>_.
+
+<% } else { %>
+_In this case it is advisable to run a more robust test, then the F-test._
+<% } %>
+
