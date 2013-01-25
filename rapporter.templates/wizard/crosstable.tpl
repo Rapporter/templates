@@ -81,26 +81,47 @@ In the below tests for [independece](http://en.wikipedia.org/wiki/Independence_(
 
 ## Chi-squared test
 
-One of the most widespread independence test is the [Chi-squared test](http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test). While using that we have the alternative hypothesis, the variables have an association between each other, in opposite of the null hypothesis that the two variables are independent.
+One of the most widespread independence test is the [Chi-squared test](http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test). While using that we have the alternative hypothesis, that two variables have an association between each other, in opposite of the null hypothesis that the variables are independent.
 
-We use the cell frequencies from the crosstables to calculate the test statistic for that. The distribution of this test statistic follows a [Chi-square distribution](http://en.wikipedia.org/wiki/Chi-squared_distribution).
+We use the cell frequencies from the crosstables to calculate the test statistic for that. The test statistic is based on the difference between this distribution  and a theoretical distribution where the variables are independent of each other. The distribution of this test statistic follows a [Chi-square distribution](http://en.wikipedia.org/wiki/Chi-squared_distribution).
 
 The test was invented by Karl Pearson in 1900. It should be noted that the Chi-squared test has the disadvantage that it is sensitive to the sample size.
 
-### References
+### Criteria
 
-  * Snedecor, George W. and Cochran, William G. (1989): _Statistical Methods_. Iowa State University Press.
-  * Karl Pearson (1900): _Philosophical Magazine_, Series 5 50 (302): 157-175.
+Before analyzing the result of the Chi-squared test, we have to check if our data meets some requirements. There are two widely used criteria which have to take into consideration, both of them are related to the so-called expected counts. These expected counts are calculated from the marginal distributions and show how the crosstabs would look like if there were complete independency between the variables. The Chi-squared test calculates how different are the observed cells from the expected ones.
+
+The two criteria are:
+
+	- none of the expected cells could be lower than 1
+
+	- 20% of the expected cells have to be at least 5
 
 <%=
 table  <- table(row, col, deparse.level = 0) # no need for NAs from here
 t      <- suppressWarnings(chisq.test(table))
 lambda <- lambda.test(table)
 cramer <- sqrt(as.numeric(t$statistic) / (sum(table) * min(dim(table))))
-t
+o <- t$observed
+num<- nrow(o)*ncol(o)
+k<-0
+for (i in 1:ncol(o))
+for (j in 1:nrow(o))
+{
+if (o[i,j]<1) {k <- k+1}
+}
+o
+crit <- 0
+if (any(o)<1) {crit <- crit+1}
+if (k<num/5)  {crit <- crit+1}
+ifelse(crit>0,"We can see that the Chi-squared test met the requirements.", "We can see that using the Chi-squared test is not advisable in this case, so you should be careful with the interpretation.")
 %>
 
-To decide if the null or the alternative hypothesis could be accepted we need to calculate the number of degrees of freedom. The degrees of freedom is easy to calculate, we minus one from the number of the categories of both the row and the coloumn variables and multiply them with each other.
+So now let's check the result of the test:
+
+<%= t %>
+
+To decide if the null or the alternative hypothesis could be accepted we need to calculate the number of degrees of freedom. The degrees of freedom is easy to calculate, we substract one from the number of the categories of both the row and the coloumn variables and multiply them with each other.
 
 To each degrees of freedom there is denoted a [critical value](http://en.wikipedia.org/wiki/Critical_value#Statistics). The result of the Chi-square test have to be lower than that value to be able to accept the nullhypothesis.
 
@@ -120,6 +141,11 @@ The association between the two variables seems to be <%=ifelse(cramer < 0.2, "w
 It seems that no real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the degree of freedom being <%=as.numeric(t$parameter)%>) at the significance level of <%=add.significance.stars(t$p.value)%>.
 
 <% } %>
+
+### References
+
+  * Fisher, R. A. (1922): On the interpretation of chi-square from contingency tables, and the calculation of P. _Journal of the Royal Statistical Society_ 85 (1): 87-94.
+  * Fisher, R.A. (1954): _Statistical Methods for Research Workers_. Oliver and Boyd.
 
 ### Adjusted standardized residuals
 
@@ -141,6 +167,11 @@ if (nrow(table.res.highlow) > 0) {
     sprintf('No interesting (higher then `2` or lower then `-2`) values found based on Pearson\'s residuals.')
 }
 %>
+
+### References
+
+  * Snedecor, George W. and Cochran, William G. (1989): _Statistical Methods_. Iowa State University Press.
+  * Karl Pearson (1900): _Philosophical Magazine_, Series 5 50 (302): 157-175.
 
 ## Fisher Exact Test
 
@@ -171,11 +202,6 @@ The variables seems to be dependent based on Fisher's exact test at the [signifi
 The variables seems to be independent based on Fisher's exact test at the [significance level](http://en.wikipedia.org/wiki/P-value) of <%=add.significance.stars(f$p.value)%>.
 
 <% }} %>
-
-### References
-
-  * Fisher, R. A. (1922): On the interpretation of chi-square from contingency tables, and the calculation of P. _Journal of the Royal Statistical Society_ 85 (1): 87-94.
-  * Fisher, R.A. (1954): _Statistical Methods for Research Workers_. Oliver and Boyd.
 
 <% if (t$p.value < 0.05 | f$p.value < 0.05) { %>
 
