@@ -1,0 +1,9 @@
+*~
+*#
+plots/
+fonts/
+images/
+javascripts/
+stylesheets/
+test.R
+*.html
