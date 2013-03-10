@@ -6,9 +6,9 @@ Packages: lattice, RJSONIO, grid, chron, makeR, ggplot2, reshape, gvlma, car, fo
 Data required: FALSE
 provider | string[0,500]=FRED       | Data provider | Short name found on Quandl site
 dataset  | string[0,500]=SP500      | Dataset       | Short name found on Quandl site
-from     | string[0,10]             | Start date    | In the form of 'YYYY-MM-DD'
-to       | string[0,10]             | End date      | In the form of 'YYYY-MM-DD'
-variable | string[0,500]            | Variable      | Variable name in the dataset
+from     | string[0,10]=            | Start date    | In the form of 'YYYY-MM-DD'
+to       | string[0,10]=            | End date      | In the form of 'YYYY-MM-DD'
+variable | string[0,500]=           | Variable      | Variable name in the dataset
 head-->
 
 # Metadata
