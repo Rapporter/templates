@@ -93,9 +93,8 @@ Before analyzing the result of the Chi-squared test, we have to check if our dat
 
 The two criteria are:
 
-	- none of the expected cells could be lower than 1
-
-	- 20% of the expected cells have to be at least 5
+  - none of the expected cells could be lower than 1
+  - 20% of the expected cells have to be at least 5
 
 <%=
 table  <- table(row, col, deparse.level = 0) # no need for NAs from here
