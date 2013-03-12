@@ -139,7 +139,7 @@ The requirements of the chi-squared test was not met, so [Yates's correction for
 
 It seems that a real association can be pointed out between *<%=rp.name(row)%>* and *<%=rp.name(col)%>* by the *<%=t$method%>* ($\chi$=<%=as.numeric(t$statistic)%> at the [degree of freedom](http://en.wikipedia.org/wiki/Degrees_of_freedom_(statistics)) being <%=as.numeric(t$parameter)%> at the [significance level](http://en.wikipedia.org/wiki/Statistical_significance) of <%=add.significance.stars(t$p.value)%>.
 
-The association between the two variables seems to be <%=ifelse(cramer < 0.2, "weak", "strong")%> based on [Cramer's V](http://en.wikipedia.org/wiki/Cram%C3%A9r's_V) (<%=cramer%>).
+The association between the two variables seems to be <%=ifelse(cramer < 0.2, "weak", "strong")%> based on [Cramer's V](http://en.wikipedia.org/wiki/Cram%C3%A9r%27s_V) (<%=cramer%>).
 
 <% } else { %>
 
@@ -180,7 +180,7 @@ if (nrow(table.res.highlow) > 0) {
 
 ## Fisher Exact Test
 
-An other test to check the possible association/independence between two variables, is the [Fisher exact test](http://en.wikipedia.org/wiki/Fisher's_exact_test). This test is especially useful with small samples, but could be used with bigger datasets as well.
+An other test to check the possible association/independence between two variables, is the [Fisher exact test](http://en.wikipedia.org/wiki/Fisher%27_exact_test). This test is especially useful with small samples, but could be used with bigger datasets as well.
 
 We have the advantage while using the Fisher's over the Chi-square test, that we could get an exact significance value not just a level of it, thus we can have an impression about the power of the test and the association.
 
@@ -214,7 +214,7 @@ The variables seems to be independent based on Fisher's exact test at the [signi
 
 ## Goodman and Kruskal's lambda
 
-With the help of the [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal's_lambda) we can look for not only relationship on its own, which have directions if we set one variable as a predictor and the other as a criterion variable.
+With the help of the [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal%27s_lambda) we can look for not only relationship on its own, which have directions if we set one variable as a predictor and the other as a criterion variable.
 
 <%if (diff(unlist(lambda, use.names = FALSE)) != 0 & !is.na(cramer)) { %>
 
@@ -222,7 +222,7 @@ Based on Goodman and Kruskal's lambda it seems that *<%=c(rp.name(col),rp.name(r
 
 <% } else { %>
 
-The computed value for [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal's_lambda) is the same for both directions: <%=lambda$row%>. For this end, we do not know the direction of the relationship.
+The computed value for [Goodman and Kruskal's lambda](http://en.wikipedia.org/wiki/Goodman_and_Kruskal%27s_lambda) is the same for both directions: <%=lambda$row%>. For this end, we do not know the direction of the relationship.
 
 <% }}} else { %>
 Moreover: **it seems that the provided variables do not fit a real crosstable**.
