@@ -102,22 +102,27 @@ table  <- table(row, col, deparse.level = 0) # no need for NAs from here
 t      <- suppressWarnings(chisq.test(table))
 lambda <- lambda.test(table)
 cramer <- sqrt(as.numeric(t$statistic) / (sum(table) * min(dim(table))))
-o <- t$observed
+o <- t$expected
 num<- nrow(o)*ncol(o)
-k<-0
-for (i in 1:ncol(o))
-for (j in 1:nrow(o))
+k <- 0
+l <- 0
+for (i in 1:nrow(o))
+for (j in 1:ncol(o))
 {
-if (o[i,j]<1) {k <- k+1}
+if (o[i,j]<5) {k <- k+1}
+if (o[i,j]<1) {l <- l+1}
 }
+%>
+Let's look at on expected values then:
+<%=
 o
 crit <- 0
-if (any(o)<1) {crit <- crit+1}
+if (l>0) {crit <- crit+1}
 if (k<num/5)  {crit <- crit+1}
 ifelse(crit>0,"We can see that the Chi-squared test met the requirements.", "We can see that using the Chi-squared test is not advisable in this case, so you should be careful with the interpretation.")
 %>
 
-So now let's check the result of the test:
+So now check the result of the test:
 
 <%= t %>
 
@@ -149,7 +154,7 @@ It seems that no real association can be pointed out between *<%=rp.name(row)%>*
 
 ### Adjusted standardized residuals
 
-The residuals show the contribution to rejeting the null hypothesis at a cell level. An extremely high or low value indicates that the given cell had a major effect on the resulting chi-square, so thus helps understanding the association in the crosstable.
+The residuals show the contribution to rejecting the null hypothesis at a cell level. An extremely high or low value indicates that the given cell had a major effect on the resulting chi-square, so thus helps understanding the association in the crosstable.
 
 <%=
 set.caption(sprintf('Residuals: "%s" and "%s"', rp.name(row), rp.name(col)))
