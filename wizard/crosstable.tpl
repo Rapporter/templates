@@ -237,7 +237,7 @@ The darker colour is one cell painted, the most counts/the higher total percenta
 
 <%=
 set.caption('Heatmap')
-ggfluctuation(table, type = 'colour') + geom_tile() + xlab('') + ylab('') + labs(fill = 'Count')
+suppressMessages(ggfluctuation(table, type = 'colour') + geom_tile() + xlab('') + ylab('') + labs(fill = 'Count'))
 %>
 
 There can be also shown the standardized adjusted residual of each cell:
@@ -281,5 +281,5 @@ The bigger one box the higher the number of the counts/the total percentages, wh
 
 <%=
 set.caption('Fluctuation diagram')
-ggfluctuation(table) + xlab('') + ylab('')
+suppressMessages(ggfluctuation(table) + xlab('') + ylab(''))
 %>
