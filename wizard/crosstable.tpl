@@ -240,6 +240,17 @@ set.caption('Heatmap')
 ggfluctuation(table, type = 'colour') + geom_tile() + xlab('') + ylab('') + labs(fill = 'Count')
 %>
 
+There can be also shown the standardized adjusted residual of each cell:
+
+<%=
+set.caption('Heatmap of residuals')
+table2 <- as.data.frame(t(table))
+table2$Freq <- as.data.frame(t(table.res))$Freq
+names(table2) <- c("x", "y", "result")
+table2 <- transform(table2, x = as.factor(x), y = as.factor(y), freq = result)
+ceiling <- max(table2$freq, na.rm = TRUE)
+ggplot(table2, aes_string(x = "x", y = "y", fill = "freq")) + geom_tile(colour = "grey50") + scale_fill_gradient2('Std. adj. res.', limits = c(-max(abs(range(table2$freq))), max(abs(range(table2$freq)))), midpoint=0, low = "red", mid="white", high = "green")
+%>
 
 In front of the heat map, on the *mosaic charts*, not only the colours are important. The size of the cells shows the amount of the counts one cell has.
 
