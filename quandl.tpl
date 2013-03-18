@@ -24,8 +24,10 @@ if (auth_token != '') {
 if ((to.len == 1 & from.len == 1) && (nchar(to) == 10 & nchar(from) == 10)) {
     url <- paste0(url, '&trim_start=', from, '&trim_end=', to)
 }
-json <- fromJSON(url, nullValue=as.numeric(NA))
+json <- tryCatch(fromJSON(url, nullValue=as.numeric(NA)), error = function(e) e)
 %>
+
+<% if (!inherits(json, 'error')) { %>
 
 Analysing *<%=json$name%>* <% if ((to.len == 1 & from.len == 1) && (nchar(to) == 10 & nchar(from) == 10)) { %>between <%=from%> and <%=to%><% } %>downloaded from [Quandl](<%=paste('http://www.quandl.com', provider, dataset, sep = '/')%>) in <%=as.numeric(Sys.time()-t)%> second<%=ifelse(as.numeric(Sys.time()-t)>2,'s', '')%> with the following original description:
 
@@ -430,4 +432,8 @@ References:
 
   * Hyndman, R.J. and Khandakar, Y. (2008) "Automatic time series forecasting: The forecast package for R", _Journal of Statistical Software_, *26*(3).
 
+<% } %>
+
+<% } else { %>
+We are terribly sorry, but could not download data from Quandl: [<%=url <- paste('http://www.quandl.com', provider, dataset, sep = '/');url%>](<%=url%>)
 <% } %>
