@@ -147,7 +147,7 @@ minind <- which(distance == min(distance[distance!=min(distance)]), arr.ind = TR
 furthest <- colnames(distance)[which(colSums(distance) == max(colSums(distance)))]
 nearest <- colnames(distance)[which(colSums(distance) == min(colSums(distance)))]%>
 
-<%=furthest %> differ<%= ifelse(length(furthest) > 1, "", "s")%> the most from the others, and <%=nearest%> seem<%= (ifelse (length(nearest) > 1, "", "s"))%> to be the most "common" observation<%= (ifelse (length(nearest) > 1, "s", ""))%>, which <%=ifelse(length(nearest) > 1, "lies", "lie") %> nearest to all other observations.
+<%=furthest %> differ<%= ifelse(length(furthest) > 1, "", "s")%> the most from the others, and <%=nearest%> seem<%= (ifelse (length(nearest) > 1, "", "s"))%> to be the most "common" player<%= (ifelse (length(nearest) > 1, "s", ""))%>, which <%=ifelse(length(nearest) > 1, "lies", "lie") %> nearest to all other players.
 
 <%=
 distance[upper.tri(distance, diag = T)] <- NA
@@ -164,16 +164,16 @@ notneeded <- apply(data.frame(unique(as.vector(sort(distance[lower.tri(distance)
 
 #### In General
 
-Now let's see which observations can be said statistically far/similar to each other in general. The 5 pairs with the biggest differences and the 5 pairs with the smallest differences will be presented. In the brackets you can see the amount of the distances between two observations.
+Now let's see which players can be said statistically far/similar to each other in general. The 5 pairs with the biggest differences and the 5 pairs with the smallest differences will be presented. In the brackets you can see the amount of the distances between two players.
 
 
-According to the used variables the 5 furthest pair of observations are:
+According to the used variables the 5 furthest pairs are:
 
 <%=
 paste(pander.return(lapply(1:5, function(i) paste0(p(c(rownames(distance)[h[i, 1]], colnames(distance)[h[i, 2]])), ' (', round(distance[h[i, 1], h[i, 2]], 2), ')'))), collapse = '\n')%>
 
 
-According to the used variables the 5 nearest pair of observations are:
+According to the used variables the 5 nearest pairs are:
 
 <%=
 paste(pander.return(lapply(1:5, function(i) paste0(p(c(rownames(distance)[j[i, 1]], colnames(distance)[j[i, 2]])), ' (', round(distance[j[i, 1], j[i, 2]], 2), ')'))), collapse = '\n') %>
